@@ -2,6 +2,8 @@ package koreatech.mcn.mcn_coffee_app.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,6 +26,7 @@ import java.util.List;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
+import koreatech.mcn.mcn_coffee_app.fragments.MenuFragment;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
 import koreatech.mcn.mcn_coffee_app.models.Option;
@@ -56,9 +59,11 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
     private LinearLayout option_layout;
     private MaterialDialog option_dialog;
     private Order order;
+    private MenuFragment menuFragment;
 
-    public MenuRecyclerViewAdapter(Context context, List<MenuModel> menus) {
+    public MenuRecyclerViewAdapter(Context context, MenuFragment menuFragment, List<MenuModel> menus) {
         this.context = context;
+        this.menuFragment = menuFragment;
         this.menus = menus;
     }
 
@@ -79,6 +84,12 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
                 .title("메뉴이름(0원)")
                 .customView(option_layout, wrapInScrollView)
                 .positiveText("주문")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        menuFragment.appendOrder(order);
+                    }
+                })
                 .negativeText("취소")
                 .build();
         return menuViewHolder;
@@ -121,11 +132,35 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
         linearLayout.addView(option_name);
         if(option.options != null){
             RadioGroup radioGroup = new RadioGroup(context);
+            boolean default_checked = false;
             for(Option sub_option: option.options){
                 RadioButton radioButton = new RadioButton(context);
                 radioButton.setText(sub_option.name);
+                radioButton.setTag(sub_option);
                 radioGroup.addView(radioButton);
+
+                if(!default_checked) {
+                    radioGroup.check(radioButton.getId());
+                    radioGroup.setTag(sub_option);
+                    order.options.add(sub_option);
+                    default_checked = true;
+                }
             }
+            radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    Option prevOption = (Option) group.getTag();
+                    Option curOption = (Option) ((RadioButton) group.findViewById(checkedId)).getTag();
+
+                    group.setTag(curOption);
+
+                    order.cost = order.cost - prevOption.cost + curOption.cost;
+                    order.options.remove(prevOption);
+                    order.options.add(curOption);
+
+                    option_dialog.setTitle(order.menu.name + "(" + order.cost + "원)");
+                }
+            });
             linearLayout.addView(radioGroup);
         }
         else{
@@ -133,13 +168,17 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
             checkBox.setText(option.name);
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    CheckBox c = (CheckBox) v;
-                    if(c.isChecked()){
+                public void onClick(View view) {
+                    CheckBox check = (CheckBox) view;
+                    if(check.isChecked()){
                         order.cost += option.cost;
-                    } else {
-                        order.cost -= option.cost;
+                        order.options.add(option);
                     }
+                    else{
+                        order.cost -= option.cost;
+                        order.options.remove(option);
+                    }
+                    option_dialog.setTitle(order.menu.name + "(" + order.cost + "원)");
                 }
             });
             linearLayout.addView(checkBox);
@@ -154,7 +193,7 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
         menu_name.setText(menu.name);
         menu_cost.setText(String.valueOf(menu.cost));
 
-        order = new Order("0", menu, new ArrayList<Option>(), menu.cost);
+        order = new Order("0", menu, new ArrayList<Option>(), menu.cost, 1);
 
         option_dialog.setTitle(menu.name + "(" + order.cost + "원)");
 

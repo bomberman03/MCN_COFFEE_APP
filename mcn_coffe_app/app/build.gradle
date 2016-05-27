@@ -32,6 +32,7 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:library:1.4.2@aar'
 
     compile files('libs/library-1.0.5.jar')
+    compile files('libs/android-viewbadger.jar')
 
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.google.android.gms:play-services-appindexing:8.1.0'

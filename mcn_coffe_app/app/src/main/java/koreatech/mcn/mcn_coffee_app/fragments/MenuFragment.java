@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import koreatech.mcn.mcn_coffee_app.adapter.MenuRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
 import koreatech.mcn.mcn_coffee_app.models.Option;
+import koreatech.mcn.mcn_coffee_app.models.Order;
 
 /**
  * Created by blood_000 on 2016-05-24.
@@ -32,15 +34,14 @@ public class MenuFragment extends TabFragment {
     private TextView cafe_detail;
 
     private Cafe cafe;
-    private List<MenuModel> menus;
+    private ArrayList<MenuModel> menus = new ArrayList<>();
 
     private RecyclerView recyclerView;
 
     public void generateMenu(){
-        menus = new ArrayList<>();
         List<Option> options  = new ArrayList<>();
         List<Option> shots = new ArrayList<>();
-        Option shot1 = new Option("0", "1샷 추가", 300, null); shots.add(shot1);
+        Option shot1 = new Option("0", "1샷 추가", 0, null); shots.add(shot1);
         Option shot2 = new Option("1", "2샷 추가", 600, null); shots.add(shot2);
         Option shot3 = new Option("2", "3샷 추가", 900, null); shots.add(shot3);
         Option shot = new Option("3", "샷 추가", 0, shots); options.add(shot);
@@ -62,32 +63,40 @@ public class MenuFragment extends TabFragment {
         }
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        checkAuthKey();
-        View view = inflater.inflate(R.layout.fragment_menu, container, false);
+    public void init(View view){
+        cafe = ((OrderActivity) getActivity()).getCafe();
 
         cafe_name = (TextView) view.findViewById(R.id.cafe_name);
         cafe_detail = (TextView) view.findViewById(R.id.cafe_detail);
 
-        cafe = ((OrderActivity) getActivity()).getCafe();
-
         cafe_name.setText(cafe.name);
         cafe_detail.setText(cafe.detail);
+    }
 
-        generateMenu();
-
+    public void initRecyclerView(View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
 
-        MenuRecyclerViewAdapter adapter = new MenuRecyclerViewAdapter(getContext(), menus);
+        MenuRecyclerViewAdapter adapter = new MenuRecyclerViewAdapter(getContext(), this, menus);
         recyclerView.setAdapter(adapter);
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        checkAuthKey();
+        View view = inflater.inflate(R.layout.fragment_menu, container, false);
+        init(view);
+        initRecyclerView(view);
+        generateMenu();
         return view;
+    }
+
+    public void appendOrder(Order order){
+        ((OrderActivity)getActivity()).routeOrder(order);
     }
 
     public void checkAuthKey(){
