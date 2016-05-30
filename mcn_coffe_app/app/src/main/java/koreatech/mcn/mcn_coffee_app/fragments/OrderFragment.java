@@ -61,7 +61,7 @@ public class OrderFragment extends TabFragment {
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                // order confirmation dialog and push order to server
             }
         });
         initButton.setOnClickListener(new View.OnClickListener() {
@@ -84,14 +84,10 @@ public class OrderFragment extends TabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         checkAuthKey();
         View view = inflater.inflate(R.layout.fragment_order, container, false);
-
-        //generateOrder();
-
         init(view);
         initListener();
         initRecyclerView();
         updateTotalCost();
-
         return view;
     }
 

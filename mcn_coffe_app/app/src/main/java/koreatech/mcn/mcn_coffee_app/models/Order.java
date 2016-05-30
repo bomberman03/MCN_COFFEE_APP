@@ -1,5 +1,10 @@
 package koreatech.mcn.mcn_coffee_app.models;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,5 +35,19 @@ public class Order {
         this.options = options;
         this.cost = cost;
         this.count = count;
+    }
+
+    public Order(JSONObject jsonObject) throws JSONException {
+        this.id = jsonObject.getString("_id");
+        this.cost = jsonObject.getInt("cost");
+        this.count = jsonObject.getInt("count");
+        JSONObject jsonMenu = jsonObject.getJSONObject("menu");
+        this.menu = new MenuModel(jsonMenu);
+        JSONArray jsonArray = jsonObject.getJSONArray("options");
+        this.options = new ArrayList<>();
+        for(int i=0; i<jsonArray.length(); i++){
+            JSONObject jsonOption = jsonArray.getJSONObject(i);
+            this.options.add(new Option(jsonOption));
+        }
     }
 }

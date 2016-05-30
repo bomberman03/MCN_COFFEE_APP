@@ -2,6 +2,11 @@ package koreatech.mcn.mcn_coffee_app.models;
 
 import android.graphics.Path;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,5 +24,28 @@ public class Option {
         this.name = name;
         this.cost = cost;
         this.options = options;
+    }
+
+    @Override
+    public String toString() {
+        return "Option{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", cost=" + cost +
+                ", options=" + options +
+                '}';
+    }
+
+    public Option(JSONObject jsonObject) throws JSONException {
+        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
+        if(jsonObject.has("name")) this.name = jsonObject.getString("name");
+        if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
+        this.options = new ArrayList<>();
+        if(jsonObject.has("options")) {
+            JSONArray jsonArray = jsonObject.getJSONArray("options");
+            for(int i=0; i<jsonArray.length(); i++){
+                // recursive
+            }
+        }
     }
 }

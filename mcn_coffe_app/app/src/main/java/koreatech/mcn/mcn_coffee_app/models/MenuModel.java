@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,15 +37,32 @@ public class MenuModel {
                 '}';
     }
 
+    public MenuModel(JSONObject jsonObject) throws JSONException {
+        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
+        if(jsonObject.has("name")) this.name = jsonObject.getString("name");
+        //this.detail = jsonObject.getString("detail");
+        if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
+        options = new ArrayList<>();
+        if(jsonObject.has("options")) {
+            JSONArray jsonArray = jsonObject.getJSONArray("options");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                // recursive code
+            }
+        }
+    }
+
     public MenuModel(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
-        this.id = jsonObject.getString("id");
-        this.name = jsonObject.getString("name");
-        this.detail = jsonObject.getString("detail");
-        this.cost = jsonObject.getInt("cost");
-        JSONArray jsonArray = jsonObject.getJSONArray("options");
-        for(int i=0; i<jsonArray.length(); i++){
-            // recursive code
+        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
+        if(jsonObject.has("name")) this.name = jsonObject.getString("name");
+        if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
+        if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
+        this.options = new ArrayList<>();
+        if(jsonObject.has("options")) {
+            JSONArray jsonArray = jsonObject.getJSONArray("options");
+            for(int i=0; i<jsonArray.length(); i++){
+                // recursive code
+            }
         }
     }
 }

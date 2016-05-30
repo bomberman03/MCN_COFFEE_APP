@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="80dp"
         android:padding="16dp"
         android:id="@+id/card_view">
         <LinearLayout
@@ -33,8 +33,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="주문번호"
-                            android:id="@+id/textView2" />
+                            android:text="주문번호"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -47,7 +46,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="12345"
-                            android:id="@+id/textView3" />
+                            android:id="@+id/order_list_idx" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -64,17 +63,18 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="12000원"
-                    android:id="@+id/textView4" />
+                    android:id="@+id/order_list_cost" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="자세한 내용을 보려면 터치"
+                    android:text="자세한 내용"
                     android:id="@+id/textView5" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/order_list_status"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -85,8 +85,7 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="신규주문"
-                    android:id="@+id/button" />
+                    android:text="신규주문"/>
             </LinearLayout>
 
         </LinearLayout>

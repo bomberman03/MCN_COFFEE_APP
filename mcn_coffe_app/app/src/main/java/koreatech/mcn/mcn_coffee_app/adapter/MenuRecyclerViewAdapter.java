@@ -130,7 +130,7 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
         TextView option_name = new TextView(context);
         option_name.setText(option.name);
         linearLayout.addView(option_name);
-        if(option.options != null){
+        if(option.options.size() > 0){
             RadioGroup radioGroup = new RadioGroup(context);
             boolean default_checked = false;
             for(Option sub_option: option.options){

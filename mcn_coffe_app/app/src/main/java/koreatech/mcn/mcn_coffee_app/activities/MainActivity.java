@@ -1,13 +1,9 @@
 package koreatech.mcn.mcn_coffee_app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,28 +12,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.adapter.CafeRecyclerViewAdapter;
+import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
-import koreatech.mcn.mcn_coffee_app.models.Order;
 import koreatech.mcn.mcn_coffee_app.models.User;
+import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private List<Cafe> cafes;
+    private List<Cafe> cafes = new ArrayList<>();
     private RecyclerView recyclerView;
+    private CafeRecyclerViewAdapter cafeRecyclerViewAdapter;
 
     public void generateTestData() {
-        cafes = new ArrayList<>();
         Cafe bubble = new Cafe(
                 "0", "커피방울", "그래도 학교 주변 유일한 사재 커피 전문점이요",
                 "/thumbnail.png", new ArrayList<User>(), new ArrayList<MenuModel>());
@@ -74,8 +80,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        generateTestData();
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -91,8 +95,10 @@ public class MainActivity extends AppCompatActivity
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
 
-        CafeRecyclerViewAdapter adapter = new CafeRecyclerViewAdapter(this, cafes);
-        recyclerView.setAdapter(adapter);
+        cafeRecyclerViewAdapter = new CafeRecyclerViewAdapter(this, cafes);
+        recyclerView.setAdapter(cafeRecyclerViewAdapter);
+
+        content_request();
     }
 
     @Override
@@ -150,5 +156,38 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void content_request(){
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("authentication_key", "");
+
+        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                for(int i=0; i<jsonArray.length(); i++){
+                    try {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Cafe cafe = new Cafe(jsonObject);
+                        cafes.add(cafe);
+                        cafeRecyclerViewAdapter.notifyDataSetChanged();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("TAG", volleyError.getMessage());
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(cafeListRequest);
     }
 }

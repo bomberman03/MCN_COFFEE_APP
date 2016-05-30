@@ -40,6 +40,21 @@ public class Cafe implements Serializable {
         this.menus = menus;
     }
 
+    public Cafe(JSONObject jsonObject) throws JSONException {
+        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
+        if(jsonObject.has("name")) this.name = jsonObject.getString("name");
+        if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
+        if(jsonObject.has("thumbnail")) this.thumbnail = jsonObject.getString("thumbnail");
+        /*JSONArray jsonLikeArray = jsonObject.getJSONArray("likes");
+        for(int i=0; i<jsonLikeArray.length(); i++){
+            // recursive code
+        }*/
+        JSONArray jsonMenuArray = jsonObject.getJSONArray("menus");
+        for(int i=0; i<jsonMenuArray.length(); i++){
+            // recursive code
+        }
+    }
+
     public Cafe(String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         this.id = jsonObject.getString("_id");

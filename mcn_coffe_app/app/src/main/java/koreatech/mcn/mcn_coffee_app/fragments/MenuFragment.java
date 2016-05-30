@@ -7,21 +7,36 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.adapter.CafeRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.adapter.MenuRecyclerViewAdapter;
+import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
 import koreatech.mcn.mcn_coffee_app.models.Option;
 import koreatech.mcn.mcn_coffee_app.models.Order;
+import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 
 /**
  * Created by blood_000 on 2016-05-24.
@@ -36,6 +51,7 @@ public class MenuFragment extends TabFragment {
     private Cafe cafe;
     private ArrayList<MenuModel> menus = new ArrayList<>();
 
+    private MenuRecyclerViewAdapter menuRecyclerViewAdapter;
     private RecyclerView recyclerView;
 
     public void generateMenu(){
@@ -80,8 +96,8 @@ public class MenuFragment extends TabFragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(llm);
 
-        MenuRecyclerViewAdapter adapter = new MenuRecyclerViewAdapter(getContext(), this, menus);
-        recyclerView.setAdapter(adapter);
+        menuRecyclerViewAdapter = new MenuRecyclerViewAdapter(getContext(), this, menus);
+        recyclerView.setAdapter(menuRecyclerViewAdapter);
     }
 
     @Nullable
@@ -91,7 +107,7 @@ public class MenuFragment extends TabFragment {
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
         init(view);
         initRecyclerView(view);
-        generateMenu();
+        content_request();
         return view;
     }
 
@@ -105,5 +121,98 @@ public class MenuFragment extends TabFragment {
         if(authentication_key.length() > 0) {
             // if authentication_key is not valid
         }
+    }
+
+    public void content_request(){
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + cafe.id + "/menus/";
+
+        Map<String, String> params = new HashMap<>();
+
+        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                for(int i=0; i<jsonArray.length(); i++){
+                    try {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        MenuModel menu = new MenuModel(jsonObject);
+                        menus.add(menu);
+                        menuRecyclerViewAdapter.notifyDataSetChanged();
+                        option_request(menu);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("TAG", volleyError.getMessage());
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(cafeListRequest);
+    }
+
+    public void option_request(final MenuModel menu){
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/menus/" + menu.id + "/options/";
+
+        Map<String, String> params = new HashMap<>();
+
+        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                for(int i=0; i<jsonArray.length(); i++){
+                    try {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Option option = new Option(jsonObject);
+                        menu.options.add(option);
+                        sub_option_request(option);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("TAG", volleyError.getMessage());
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(cafeListRequest);
+    }
+
+    public void sub_option_request(final Option option){
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/options/" + option.id + "/options/";
+
+        Map<String, String> params = new HashMap<>();
+
+        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray jsonArray) {
+                for(int i=0; i<jsonArray.length(); i++){
+                    try {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        Option sub_option = new Option(jsonObject);
+                        option.options.add(sub_option);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Log.d("TAG", volleyError.getMessage());
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(cafeListRequest);
     }
 }

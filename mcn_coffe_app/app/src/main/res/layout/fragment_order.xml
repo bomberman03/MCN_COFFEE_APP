@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <Button
-            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/AppTheme.OrderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
@@ -23,7 +23,7 @@
             android:id="@+id/order_button"
             android:layout_gravity="center_horizontal"/>
         <Button
-            style="@style/Widget.AppCompat.Button.Colored"
+            android:theme="@style/AppTheme.NewButton"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="6dp"
