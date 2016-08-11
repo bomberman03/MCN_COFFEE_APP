@@ -96,7 +96,7 @@ public class OrderListFragment extends TabFragment{
 
     public void connectSocket(){
         try {
-            mSocket = IO.socket("http://192.168.0.93:8080");
+            mSocket = IO.socket("http://" + Settings.serverIp + ":" + Settings.socket_port);
         } catch (URISyntaxException e) {
             Log.d("TAG",e.getMessage());
         }
@@ -115,6 +115,9 @@ public class OrderListFragment extends TabFragment{
                     if(jsonObject.has("name")) name = jsonObject.getString("name");
                     String id = "";
                     if(jsonObject.has("id")) id = jsonObject.getString("id");
+                    Log.d("DEBUG",method);
+                    Log.d("DEBUG",name);
+                    Log.d("DEBUG",id);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
