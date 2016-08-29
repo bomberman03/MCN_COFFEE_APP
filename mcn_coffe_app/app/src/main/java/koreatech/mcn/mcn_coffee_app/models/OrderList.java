@@ -16,36 +16,18 @@ public class OrderList {
     public String id;
     public ArrayList<Order> orders;
     public int cost;
-    public int idx;
     public int status;
-
-    public OrderList(String id, ArrayList<Order> orders, int cost, int idx, int status){
-        this.id = id;
-        this.orders = orders;
-        this.cost = cost;
-        this.idx = idx;
-        this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        return "OrderList{" +
-                "id='" + id + '\'' +
-                ", orders=" + orders +
-                ", cost=" + cost +
-                '}';
-    }
 
     public OrderList(JSONObject jsonObject) throws JSONException {
         this.id = jsonObject.getString("_id");
         this.cost = jsonObject.getInt("cost");
-        this.idx = 12345;
         this.status = jsonObject.getInt("status");
         this.orders = new ArrayList<>();
         JSONArray jsonArray = jsonObject.getJSONArray("orders");
         for(int i=0; i<jsonArray.length(); i++){
-            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-            orders.add(new Order(jsonObject1));
+            JSONObject object = jsonArray.getJSONObject(i);
+            Order order = new Order(object);
+            orders.add(order);
         }
     }
 }

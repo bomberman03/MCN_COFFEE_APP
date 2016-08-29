@@ -57,6 +57,7 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
             public void onClick(View v) {
                 orders.get(position).count++;
                 holder.orderCount.setText(orders.get(position).count + "개");
+                orderFragment.updateTotalCost();
             }
         });
         holder.decreaseOrder.setOnClickListener(new View.OnClickListener() {
@@ -65,6 +66,7 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
                 orders.get(position).count--;
                 if(orders.get(position).count > 0) {
                     holder.orderCount.setText(orders.get(position).count + "개");
+                    orderFragment.updateTotalCost();
                 } else {
                     removeAt(position);
                 }

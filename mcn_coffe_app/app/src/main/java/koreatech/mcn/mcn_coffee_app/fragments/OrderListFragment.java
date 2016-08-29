@@ -57,38 +57,12 @@ public class OrderListFragment extends TabFragment{
 
     private Socket mSocket;
 
-    public void generateOrder(){
-        ArrayList<Order> orders = new ArrayList<>();
-        for(int i=0; i<6; i++) {
-            List<Option> options = new ArrayList<>();
-            List<Option> shots = new ArrayList<>();
-            Option shot1 = new Option("0", "1샷 추가", 0, null);
-            shots.add(shot1);
-            Option shot2 = new Option("1", "2샷 추가", 600, null);
-            shots.add(shot2);
-            Option shot3 = new Option("2", "3샷 추가", 900, null);
-            shots.add(shot3);
-            Option shot = new Option("3", "샷 추가", 0, shots);
-            options.add(shot);
-            Option cream = new Option("4", "크림 추가", 500, null);
-            options.add(cream);
-            MenuModel americano = new MenuModel("0", "아메리카노",
-                    "쓰지만 계속 먹으면 중독되는 이 맛", 3000, options);
-            Order order = new Order("0", americano, shots, 3000, 1);
-            orders.add(order);
-        }
-        OrderList orderList0 = new OrderList("0", orders, 3000, 12345, 0);
-        orderLists.add(orderList0);
-        OrderList orderList1 = new OrderList("0", orders, 5000, 12346, 1);
-        orderLists.add(orderList1);
-    }
-
     public void init(View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
     }
 
     public void initRecyclerView(){
-        orderListRecyclerViewAdapter = new OrderListRecyclerViewAdapter(getContext(), this, orderLists);
+        orderListRecyclerViewAdapter = new OrderListRecyclerViewAdapter(getContext(), orderLists);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(orderListRecyclerViewAdapter);
@@ -115,9 +89,6 @@ public class OrderListFragment extends TabFragment{
                     if(jsonObject.has("name")) name = jsonObject.getString("name");
                     String id = "";
                     if(jsonObject.has("id")) id = jsonObject.getString("id");
-                    Log.d("DEBUG",method);
-                    Log.d("DEBUG",name);
-                    Log.d("DEBUG",id);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

@@ -66,7 +66,6 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
     }
 
     public OrderListRecyclerViewAdapter(Context context,
-                                        OrderListFragment orderListFragment,
                                         ArrayList<OrderList> orderLists) {
         this.context = context;
         this.orderLists = orderLists;
@@ -78,7 +77,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
     }
 
     @Override
-    public OrderListViewHolder onCreateViewHolder(ViewGroup viewGroup, int postion) {
+    public OrderListViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         this.viewGroup = viewGroup;
         View v = LayoutInflater.from(viewGroup.getContext()).
                 inflate(R.layout.order_list_item, viewGroup, false);
@@ -96,7 +95,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
 
     @Override
     public void onBindViewHolder(OrderListViewHolder orderListViewHolder, final int position) {
-        orderListViewHolder.orderListIdx.setText(String.valueOf(orderLists.get(position).idx));
+        //orderListViewHolder.orderListIdx.setText(String.valueOf(orderLists.get(position).idx));
         orderListViewHolder.orderListCost.setText(orderLists.get(position).cost + "원");
         orderListViewHolder.orderListStatus.removeAllViews();
         orderListViewHolder.orderListStatus.addView(orderListStatusButton(orderLists.get(position).status));
@@ -144,7 +143,7 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
     }
 
     public void updateOptionDialog(OrderList orderList){
-        order_list_dialog.setTitle("주문 번호 " + orderList.idx);
+        //order_list_dialog.setTitle("주문 번호 " + orderList.idx);
         LinearLayout orderList_section = (LinearLayout) order_list_layout.findViewById(R.id.order_list_section);
         orderList_section.removeAllViews();
         for(Order order: orderList.orders) {

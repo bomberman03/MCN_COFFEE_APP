@@ -30,6 +30,7 @@ import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.adapter.CafeRecyclerViewAdapter;
+import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
@@ -42,26 +43,6 @@ public class MainActivity extends AppCompatActivity
     private List<Cafe> cafes = new ArrayList<>();
     private RecyclerView recyclerView;
     private CafeRecyclerViewAdapter cafeRecyclerViewAdapter;
-
-    public void generateTestData() {
-        Cafe bubble = new Cafe(
-                "0", "커피방울", "그래도 학교 주변 유일한 사재 커피 전문점이요",
-                "/thumbnail.png", new ArrayList<User>(), new ArrayList<MenuModel>());
-        cafes.add(bubble);
-        Cafe dazzle = new Cafe(
-                "0", "대즐", "한기대의 유일무이한 커피 전문점이죠",
-                "/thumbnail.png", new ArrayList<User>(), new ArrayList<MenuModel>());
-        cafes.add(dazzle);
-        Cafe mcnCafe = new Cafe(
-                "0", "MCN_COFFEE", "MCN Lab 화이팅",
-                "/thumbnail.png", new ArrayList<User>(), new ArrayList<MenuModel>());
-        cafes.add(mcnCafe);
-        Cafe coffeeBene = new Cafe(
-                "0", "커피베네", "광고가 나오기 전에 커피를 한 잔 하시죠",
-                "/thumbnail.png", new ArrayList<User>(), new ArrayList<MenuModel>());
-        cafes.add(coffeeBene);
-
-    }
 
     @Override
     public void onStart() {
@@ -76,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

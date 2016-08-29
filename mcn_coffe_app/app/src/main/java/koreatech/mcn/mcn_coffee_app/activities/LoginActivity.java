@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -27,6 +28,7 @@ import java.util.concurrent.RunnableFuture;
 import java.util.logging.Handler;
 
 import koreatech.mcn.mcn_coffe_app.R;
+import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 
 public class LoginActivity extends AppCompatActivity {
@@ -110,6 +112,11 @@ public class LoginActivity extends AppCompatActivity {
                         hideProgressDialog();
                         try {
                             String token = jsonObject.getString("token");
+                            String jsonString = new String(android.util.Base64.decode(token.split("\\.")[1], Base64.DEFAULT));
+                            JSONObject object = new JSONObject(jsonString);
+
+                            AuthManager.getInstance().initUser(object);
+
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
                         }catch (JSONException e){
@@ -140,7 +147,6 @@ public class LoginActivity extends AppCompatActivity {
                                 case 401:
                                     json = new String(networkResponse.data);
                                     json = trimMessage(json, "message");
-                                    Log.d("TAG",json);
                                     showFailureDialog(json);
                                     break;
                             }

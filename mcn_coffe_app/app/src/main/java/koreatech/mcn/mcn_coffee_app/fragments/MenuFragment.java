@@ -54,31 +54,6 @@ public class MenuFragment extends TabFragment {
     private MenuRecyclerViewAdapter menuRecyclerViewAdapter;
     private RecyclerView recyclerView;
 
-    public void generateMenu(){
-        List<Option> options  = new ArrayList<>();
-        List<Option> shots = new ArrayList<>();
-        Option shot1 = new Option("0", "1샷 추가", 0, null); shots.add(shot1);
-        Option shot2 = new Option("1", "2샷 추가", 600, null); shots.add(shot2);
-        Option shot3 = new Option("2", "3샷 추가", 900, null); shots.add(shot3);
-        Option shot = new Option("3", "샷 추가", 0, shots); options.add(shot);
-        Option cream = new Option("4", "크림 추가", 500, null); options.add(cream);
-
-        for(int i=0; i<3; i++) {
-            MenuModel americano = new MenuModel("0", "아메리카노",
-                    "쓰지만 계속 먹으면 중독되는 이 맛", 3000, options);
-            menus.add(americano);
-            MenuModel cafemoca = new MenuModel("1", "카페모카",
-                    "모카빵이랑 같이 먹는 카페", 4000, options);
-            menus.add(cafemoca);
-            MenuModel afogato = new MenuModel("2", "아포카토",
-                    "아이스크림과 커피의 환상적인 조합", 5000, options);
-            menus.add(afogato);
-            MenuModel cafeLatte = new MenuModel("3", "카페라떼",
-                    "라떼 한잔 마시고 가세요", 3500, options);
-            menus.add(cafeLatte);
-        }
-    }
-
     public void init(View view){
         cafe = ((OrderActivity) getActivity()).getCafe();
 
@@ -124,7 +99,6 @@ public class MenuFragment extends TabFragment {
     }
 
     public void content_request(){
-
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + cafe.id + "/menus/";
 
@@ -139,68 +113,6 @@ public class MenuFragment extends TabFragment {
                         MenuModel menu = new MenuModel(jsonObject);
                         menus.add(menu);
                         menuRecyclerViewAdapter.notifyDataSetChanged();
-                        option_request(menu);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("TAG", volleyError.getMessage());
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(cafeListRequest);
-    }
-
-    public void option_request(final MenuModel menu){
-
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/menus/" + menu.id + "/options/";
-
-        Map<String, String> params = new HashMap<>();
-
-        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                for(int i=0; i<jsonArray.length(); i++){
-                    try {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        Option option = new Option(jsonObject);
-                        menu.options.add(option);
-                        sub_option_request(option);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("TAG", volleyError.getMessage());
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(cafeListRequest);
-    }
-
-    public void sub_option_request(final Option option){
-
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/options/" + option.id + "/options/";
-
-        Map<String, String> params = new HashMap<>();
-
-        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                for(int i=0; i<jsonArray.length(); i++){
-                    try {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        Option sub_option = new Option(jsonObject);
-                        option.options.add(sub_option);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

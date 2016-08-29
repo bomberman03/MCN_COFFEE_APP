@@ -18,17 +18,6 @@ public class Order {
     public int cost;
     public int count;
 
-    @Override
-    public String toString() {
-        return "Order{" +
-                "id='" + id + '\'' +
-                ", menu=" + menu +
-                ", options=" + options +
-                ", cost=" + cost +
-                ", count=" + count +
-                '}';
-    }
-
     public Order(String id, MenuModel menu, List<Option> options, int cost, int count){
         this.id = id;
         this.menu = menu;

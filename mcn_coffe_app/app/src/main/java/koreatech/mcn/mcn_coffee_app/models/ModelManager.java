@@ -9,11 +9,10 @@ public class ModelManager {
 
     private static ModelManager singleton = new ModelManager();
 
-    private HashMap<Integer, Cafe> content = new HashMap<>();
-    private HashMap<Integer, MenuModel> contentImage = new HashMap<>();
-    private HashMap<Integer, Option> item = new HashMap<>();
-    private HashMap<Integer, Order> step = new HashMap<>();
-    private HashMap<Integer, User> stepFile = new HashMap<>();
+    private HashMap<Integer, Cafe> cafe = new HashMap<>();
+    private HashMap<Integer, MenuModel> menuModel = new HashMap<>();
+    private HashMap<Integer, Order> order = new HashMap<>();
+    private HashMap<Integer, User> user = new HashMap<>();
 
     public static ModelManager getInstance(){
         return singleton;

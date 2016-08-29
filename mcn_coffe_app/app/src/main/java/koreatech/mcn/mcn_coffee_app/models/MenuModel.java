@@ -26,42 +26,19 @@ public class MenuModel {
         this.options = options;
     }
 
-    @Override
-    public String toString() {
-        return "MenuModel{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", detail='" + detail + '\'' +
-                ", cost=" + cost +
-                ", options=" + options +
-                '}';
-    }
-
     public MenuModel(JSONObject jsonObject) throws JSONException {
         if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
-        //this.detail = jsonObject.getString("detail");
+        if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
         if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
         options = new ArrayList<>();
         if(jsonObject.has("options")) {
             JSONArray jsonArray = jsonObject.getJSONArray("options");
             for (int i = 0; i < jsonArray.length(); i++) {
                 // recursive code
-            }
-        }
-    }
-
-    public MenuModel(String jsonString) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
-        if(jsonObject.has("name")) this.name = jsonObject.getString("name");
-        if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
-        if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
-        this.options = new ArrayList<>();
-        if(jsonObject.has("options")) {
-            JSONArray jsonArray = jsonObject.getJSONArray("options");
-            for(int i=0; i<jsonArray.length(); i++){
-                // recursive code
+                JSONObject object = jsonArray.getJSONObject(i);
+                Option option = new Option(object);
+                options.add(option);
             }
         }
     }

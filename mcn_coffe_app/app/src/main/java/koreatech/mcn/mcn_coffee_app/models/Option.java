@@ -14,30 +14,17 @@ import java.util.List;
  */
 public class Option {
 
-    public String id;
     public String name;
     public int cost;
     public List<Option> options;
 
-    public Option(String id, String name, int cost, List<Option> options){
-        this.id = id;
+    public Option(String name, int cost, List<Option> options){
         this.name = name;
         this.cost = cost;
         this.options = options;
     }
 
-    @Override
-    public String toString() {
-        return "Option{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", cost=" + cost +
-                ", options=" + options +
-                '}';
-    }
-
     public Option(JSONObject jsonObject) throws JSONException {
-        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
         if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
         this.options = new ArrayList<>();
@@ -45,6 +32,9 @@ public class Option {
             JSONArray jsonArray = jsonObject.getJSONArray("options");
             for(int i=0; i<jsonArray.length(); i++){
                 // recursive
+                JSONObject object = jsonArray.getJSONObject(i);
+                Option subOption = new Option(object);
+                this.options.add(subOption);
             }
         }
     }
