@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +25,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.adapter.OrderRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
-import koreatech.mcn.mcn_coffee_app.models.MenuModel;
-import koreatech.mcn.mcn_coffee_app.models.Option;
+import koreatech.mcn.mcn_coffee_app.localStorage.OrderDBHelper;
+import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
+import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
 import koreatech.mcn.mcn_coffee_app.models.Order;
 
 /**
@@ -182,11 +181,13 @@ public class OrderFragment extends TabFragment {
         RequestQueue queue = Volley.newRequestQueue(getContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + ((OrderActivity) getActivity()).getCafe().id + "/orders/";
         JSONObject jsonParam = new JSONObject();
+
         try {
             jsonParam.put("cafe", ((OrderActivity) getActivity()).getCafe().id);
             jsonParam.put("user", AuthManager.getInstance().getCurrentUser().id);
             jsonParam.put("cost", orderCost);
             JSONArray jsonArray = new JSONArray();
+
             for(int i=0; i<orders.size(); i++)
             {
                 JSONObject orderObject = new JSONObject();
@@ -224,6 +225,16 @@ public class OrderFragment extends TabFragment {
                     public void onResponse(JSONObject jsonObject) {
                         hideProgressDialog();
                         showSuccessDialog();
+                        String id = "";
+                        try {
+                            if(jsonObject.has("_id"))
+                                id = jsonObject.getString("_id");
+                            else
+                                return;
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        OrderListManager.getInstance().insertNewOrder(new OrderDTO(id, OrderDBHelper.ORDERS_STATUS_WAIT));
                     }
                 }, new Response.ErrorListener() {
                     @Override

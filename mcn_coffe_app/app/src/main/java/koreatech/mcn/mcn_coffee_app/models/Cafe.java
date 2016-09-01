@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,13 +34,12 @@ public class Cafe implements Serializable {
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
         if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
         if(jsonObject.has("thumbnail")) this.thumbnail = jsonObject.getString("thumbnail");
-        /*JSONArray jsonLikeArray = jsonObject.getJSONArray("likes");
-        for(int i=0; i<jsonLikeArray.length(); i++){
-            // recursive code
-        }*/
-        JSONArray jsonMenuArray = jsonObject.getJSONArray("menus");
-        for(int i=0; i<jsonMenuArray.length(); i++){
-            // recursive code
+        this.menus = new ArrayList<>();
+        if(jsonObject.has("menu")) {
+            JSONArray jsonMenuArray = jsonObject.getJSONArray("menus");
+            for (int i = 0; i < jsonMenuArray.length(); i++) {
+                // recursive code
+            }
         }
     }
 }

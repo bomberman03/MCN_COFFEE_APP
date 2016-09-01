@@ -1,5 +1,6 @@
 package koreatech.mcn.mcn_coffee_app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,12 +31,10 @@ import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.adapter.CafeRecyclerViewAdapter;
-import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
-import koreatech.mcn.mcn_coffee_app.models.MenuModel;
-import koreatech.mcn.mcn_coffee_app.models.User;
 import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
+import koreatech.mcn.mcn_coffee_app.services.OrderAlarmService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,6 +56,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = new Intent(this, OrderAlarmService.class);
+        startService(intent);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

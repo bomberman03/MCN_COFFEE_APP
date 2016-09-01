@@ -5,7 +5,7 @@ package koreatech.mcn.mcn_coffee_app.config;
  */
 public interface Settings {
 
-    public static final String serverIp = "52.197.97.173";
+    public static final String serverIp = "192.168.0.58";
     public static final int port = 3000;
     public static final int socket_port = 8080;
 

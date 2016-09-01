@@ -1,7 +1,5 @@
 package koreatech.mcn.mcn_coffee_app.models;
 
-import android.graphics.Path;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,12 +15,6 @@ public class Option {
     public String name;
     public int cost;
     public List<Option> options;
-
-    public Option(String name, int cost, List<Option> options){
-        this.name = name;
-        this.cost = cost;
-        this.options = options;
-    }
 
     public Option(JSONObject jsonObject) throws JSONException {
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");

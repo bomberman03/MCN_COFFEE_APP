@@ -15,31 +15,20 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import koreatech.mcn.mcn_coffe_app.R;
-import koreatech.mcn.mcn_coffee_app.activities.MainActivity;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.adapter.OrderListRecyclerViewAdapter;
-import koreatech.mcn.mcn_coffee_app.adapter.OrderRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
-import koreatech.mcn.mcn_coffee_app.models.MenuModel;
-import koreatech.mcn.mcn_coffee_app.models.Option;
-import koreatech.mcn.mcn_coffee_app.models.Order;
 import koreatech.mcn.mcn_coffee_app.models.OrderList;
 import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 
@@ -55,8 +44,6 @@ public class OrderListFragment extends TabFragment{
     private RecyclerView recyclerView;
     private OrderListRecyclerViewAdapter orderListRecyclerViewAdapter;
 
-    private Socket mSocket;
-
     public void init(View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
     }
@@ -68,42 +55,6 @@ public class OrderListFragment extends TabFragment{
         recyclerView.setAdapter(orderListRecyclerViewAdapter);
     }
 
-    public void connectSocket(){
-        try {
-            mSocket = IO.socket("http://" + Settings.serverIp + ":" + Settings.socket_port);
-        } catch (URISyntaxException e) {
-            Log.d("TAG",e.getMessage());
-        }
-        mSocket.connect();
-        Cafe cafe = ((OrderActivity)getActivity()).getCafe();
-        mSocket.on(cafe.id, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                JSONObject jsonObject = (JSONObject) args[0];
-                try {
-                    Object data  = "";
-                    if(jsonObject.has("data")) data = jsonObject.get("data");
-                    String method = "";
-                    if(jsonObject.has("method")) method = jsonObject.getString("method");
-                    String name = "";
-                    if(jsonObject.has("name")) name = jsonObject.getString("name");
-                    String id = "";
-                    if(jsonObject.has("id")) id = jsonObject.getString("id");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        mSocket.disconnect();
-        Cafe cafe = ((OrderActivity)getActivity()).getCafe();
-        mSocket.off(cafe.id);
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -112,7 +63,6 @@ public class OrderListFragment extends TabFragment{
         init(view);
         initRecyclerView();
         content_request();
-        connectSocket();
 
         return view;
     }

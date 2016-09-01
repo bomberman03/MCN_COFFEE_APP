@@ -19,15 +19,17 @@ public class OrderList {
     public int status;
 
     public OrderList(JSONObject jsonObject) throws JSONException {
-        this.id = jsonObject.getString("_id");
-        this.cost = jsonObject.getInt("cost");
-        this.status = jsonObject.getInt("status");
+        if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
+        if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
+        if(jsonObject.has("status")) this.status = jsonObject.getInt("status");
         this.orders = new ArrayList<>();
-        JSONArray jsonArray = jsonObject.getJSONArray("orders");
-        for(int i=0; i<jsonArray.length(); i++){
-            JSONObject object = jsonArray.getJSONObject(i);
-            Order order = new Order(object);
-            orders.add(order);
+        if(jsonObject.has("orders")) {
+            JSONArray jsonArray = jsonObject.getJSONArray("orders");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject object = jsonArray.getJSONObject(i);
+                Order order = new Order(object);
+                orders.add(order);
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -24,17 +23,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
-import koreatech.mcn.mcn_coffee_app.adapter.CafeRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.adapter.MenuRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
-import koreatech.mcn.mcn_coffee_app.models.Option;
 import koreatech.mcn.mcn_coffee_app.models.Order;
 import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 

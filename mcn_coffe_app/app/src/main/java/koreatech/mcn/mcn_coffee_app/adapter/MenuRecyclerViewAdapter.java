@@ -1,14 +1,10 @@
 package koreatech.mcn.mcn_coffee_app.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -25,9 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import koreatech.mcn.mcn_coffe_app.R;
-import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.fragments.MenuFragment;
-import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
 import koreatech.mcn.mcn_coffee_app.models.Option;
 import koreatech.mcn.mcn_coffee_app.models.Order;
