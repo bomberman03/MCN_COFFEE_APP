@@ -3,19 +3,33 @@ package koreatech.mcn.mcn_coffee_app.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.sql.Timestamp;
+
+import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
+import koreatech.mcn.mcn_coffee_app.localStorage.OrderDBHelper;
+import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.User;
@@ -107,7 +121,56 @@ public class OrderAlarmService extends Service {
     }
 
     public void updateOrderLIst() {
-        startThread();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/orders/users";
+        JSONObject jsonParam = new JSONObject();
+
+        try {
+            jsonParam.put("user", AuthManager.getInstance().getCurrentUser().id);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postOrderRequest = new JsonObjectRequest
+                (Request.Method.POST, url, jsonParam, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        JSONArray jsonArray = new JSONArray();
+                        try {
+                            jsonArray = jsonObject.getJSONArray("orders");
+                            for(int i=0; i<jsonArray.length(); i++)
+                            {
+                                JSONObject orderObject = jsonArray.getJSONObject(i);
+                                String createdAt = "";
+                                String updatedAt = "";
+                                String id = "";
+                                int status = 0;
+                                try {
+                                    if(orderObject.has("createdAt"))
+                                        createdAt = OrderDTO.isoTimeToTimeStamp(orderObject.getString("createdAt"));
+                                    if(orderObject.has("updatedAt"))
+                                        updatedAt = OrderDTO.isoTimeToTimeStamp(orderObject.getString("updatedAt"));
+                                    if(orderObject.has("_id"))
+                                        id = orderObject.getString("_id");
+                                    if(orderObject.has("status"))
+                                        status = orderObject.getInt("status");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                OrderListManager.getInstance().updateOrder(new OrderDTO(createdAt, updatedAt, id, status));
+                            }
+                            //startThread();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                });
+        //queue.add(postOrderRequest);
+
     }
 
     public void startThread() {

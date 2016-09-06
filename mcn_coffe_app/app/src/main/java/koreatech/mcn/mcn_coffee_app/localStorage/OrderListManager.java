@@ -1,12 +1,9 @@
 package koreatech.mcn.mcn_coffee_app.localStorage;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import koreatech.mcn.mcn_coffee_app.models.OrderList;
 
 /**
  * Created by blood_000 on 2016-08-31.
@@ -17,7 +14,6 @@ public class OrderListManager {
 
     private ArrayList<OrderDTO> waitList;
     private ArrayList<OrderDTO> completeList;
-    private ArrayList<OrderDTO> receiveRequestList;
 
     private OrderDBHelper orderDBHelper;
 
@@ -33,7 +29,6 @@ public class OrderListManager {
         orderDBHelper = new OrderDBHelper(context);
         waitList = orderDBHelper.getOrder(OrderDBHelper.ORDERS_STATUS_WAIT, OrderDBHelper.ORDERS_STATUS_WAIT);
         completeList = orderDBHelper.getOrder(OrderDBHelper.ORDERS_STATUS_COMPLETE, OrderDBHelper.ORDERS_STATUS_COMPLETE);
-        receiveRequestList = orderDBHelper.getOrder(OrderDBHelper.ORDERS_STATUS_RECEIVE_REQUEST, OrderDBHelper.ORDERS_STATUS_RECEIVE_REQUEST);
     }
 
     public void insertNewOrder(OrderDTO order)
@@ -44,7 +39,6 @@ public class OrderListManager {
 
     public OrderDTO updateOrder(OrderDTO order)
     {
-        Log.d(TAG, order.id + order.status);
         // when new order status is wait
         if(order.status == OrderDBHelper.ORDERS_STATUS_WAIT)
         {
@@ -72,24 +66,37 @@ public class OrderListManager {
                 OrderDTO orderDTO = iterator.next();
                 if(order.id.equals(orderDTO.id)) {
                     completeList.add(orderDTO);
-                    orderDBHelper.updateOrder(orderDTO);
+                    orderDBHelper.updateOrder(order);
                     iterator.remove();
                     return order;
                 }
             }
             // insert new complete order
+            orderDBHelper.insertOrder(order);
+            completeList.add(order);
+            return order;
         }
 
         // new order status is receive
         // before status can be request(-1), wait(0), complete(1), receive request(3)
         if(order.status == OrderDBHelper.ORDERS_STATUS_RECEIVE)
         {
-            Iterator<OrderDTO> iterator = receiveRequestList.iterator();
+            Iterator<OrderDTO> iterator = waitList.iterator();
             while(iterator.hasNext())
             {
                 OrderDTO orderDTO = iterator.next();
                 if(order.id.equals(orderDTO.id)) {
-                    orderDBHelper.updateOrder(orderDTO);
+                    orderDBHelper.updateOrder(order);
+                    iterator.remove();
+                    return order;
+                }
+            }
+            iterator = completeList.iterator();
+            while(iterator.hasNext())
+            {
+                OrderDTO orderDTO = iterator.next();
+                if(order.id.equals(orderDTO.id)) {
+                    orderDBHelper.updateOrder(order);
                     iterator.remove();
                     return order;
                 }
@@ -105,7 +112,7 @@ public class OrderListManager {
             {
                 OrderDTO orderDTO = iterator.next();
                 if(order.id.equals(orderDTO.id)) {
-                    orderDBHelper.updateOrder(orderDTO);
+                    orderDBHelper.updateOrder(order);
                     iterator.remove();
                     return order;
                 }
@@ -115,17 +122,7 @@ public class OrderListManager {
             {
                 OrderDTO orderDTO = iterator.next();
                 if(order.id.equals(orderDTO.id)) {
-                    orderDBHelper.updateOrder(orderDTO);
-                    iterator.remove();
-                    return order;
-                }
-            }
-            iterator = receiveRequestList.iterator();
-            while(iterator.hasNext())
-            {
-                OrderDTO orderDTO = iterator.next();
-                if(order.id.equals(orderDTO.id)) {
-                    orderDBHelper.updateOrder(orderDTO);
+                    orderDBHelper.updateOrder(order);
                     iterator.remove();
                     return order;
                 }
@@ -141,7 +138,6 @@ public class OrderListManager {
 
         requestList.addAll(this.waitList);
         requestList.addAll(this.completeList);
-        requestList.addAll(this.receiveRequestList);
 
         return requestList;
     }

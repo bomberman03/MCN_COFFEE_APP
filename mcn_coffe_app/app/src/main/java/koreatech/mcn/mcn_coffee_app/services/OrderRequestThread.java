@@ -85,11 +85,19 @@ public class OrderRequestThread extends Thread {
                             for(int i=0; i<jsonArray.length(); i++)
                             {
                                 JSONObject object = jsonArray.getJSONObject(i);
+                                String createdAt = "";
+                                String updatedAt = "";
                                 String id = "";
                                 int status = 0;
-                                if(object.has("_id")) id = object.getString("_id");
-                                if(object.has("status")) status = object.getInt("status");
-                                OrderDTO res = OrderListManager.getInstance().updateOrder(new OrderDTO(id, status));
+                                if(object.has("createdAt"))
+                                    createdAt = OrderDTO.isoTimeToTimeStamp(object.getString("createdAt"));
+                                if(object.has("updatedAt"))
+                                    updatedAt = OrderDTO.isoTimeToTimeStamp(object.getString("updatedAt"));
+                                if(object.has("_id"))
+                                    id = object.getString("_id");
+                                if(object.has("status"))
+                                    status = object.getInt("status");
+                                OrderDTO res = OrderListManager.getInstance().updateOrder(new OrderDTO(createdAt, updatedAt, id, status));
                                 if(res != null)
                                 {
                                     Message message = handler.obtainMessage();

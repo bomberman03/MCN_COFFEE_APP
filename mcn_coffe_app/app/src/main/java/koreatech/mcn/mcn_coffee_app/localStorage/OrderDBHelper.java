@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -16,6 +15,8 @@ public class OrderDBHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "mcnCoffee.db";
     public static final String ORDER_TABLE_NAME = "orders";
+    public static final String ORDERS_COLUMN_CREATED_AT = "createdAt";
+    public static final String ORDERS_COLUMN_UPDATED_AT = "updatedAt";
     public static final String ORDERS_COLUMN_ORDER = "id";
     public static final String ORDERS_COLUMN_STATUS = "status";
 
@@ -35,7 +36,7 @@ public class OrderDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE ORDERS (id text not null, status integer not null);";
+        String sql = "CREATE TABLE ORDERS (createdAt timestamp not null, updatedAt timestamp not null, id text not null, status integer not null);";
         db.execSQL(sql);
     }
 
@@ -45,10 +46,17 @@ public class OrderDBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void clearDB()
+    {
+        SQLiteDatabase db = getWritableDatabase();
+    }
+
     public boolean insertOrder(OrderDTO order)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put("createdAt", order.createdAt);
+        contentValues.put("updatedAt", order.updatedAt);
         contentValues.put("id", order.id);
         contentValues.put("status", order.status);
         db.insert("orders", null, contentValues);
@@ -59,6 +67,8 @@ public class OrderDBHelper extends SQLiteOpenHelper {
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        contentValues.put("createdAt", order.createdAt);
+        contentValues.put("updatedAt", order.updatedAt);
         contentValues.put("status", order.status);
         db.update("orders", contentValues, "id = ? ", new String[] { order.id } );
         return true;
@@ -71,14 +81,15 @@ public class OrderDBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String sql = "select * from orders " +
                 "where status >= " + minStatus + " and status <= " + maxStatus;
-        Log.d(TAG, sql);
         Cursor res =  db.rawQuery( sql, null);
         res.moveToFirst();
 
         while(res.isAfterLast() == false){
+            String createdAt = res.getString(res.getColumnIndex(ORDERS_COLUMN_CREATED_AT));
+            String updatedAt = res.getString(res.getColumnIndex(ORDERS_COLUMN_UPDATED_AT));
             String id  = res.getString(res.getColumnIndex(ORDERS_COLUMN_ORDER));
             int status  = res.getInt(res.getColumnIndex(ORDERS_COLUMN_STATUS));
-            array_list.add(new OrderDTO(id, status));
+            array_list.add(new OrderDTO(createdAt, updatedAt, id, status));
             res.moveToNext();
         }
 

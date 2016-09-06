@@ -225,16 +225,20 @@ public class OrderFragment extends TabFragment {
                     public void onResponse(JSONObject jsonObject) {
                         hideProgressDialog();
                         showSuccessDialog();
+                        String createdAt = "";
+                        String updatedAt = "";
                         String id = "";
                         try {
+                            if(jsonObject.has("createdAt"))
+                                createdAt = jsonObject.getString("createdAt");
+                            if(jsonObject.has("updatedAt"))
+                                updatedAt = jsonObject.getString("updatedAt");
                             if(jsonObject.has("_id"))
                                 id = jsonObject.getString("_id");
-                            else
-                                return;
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        OrderListManager.getInstance().insertNewOrder(new OrderDTO(id, OrderDBHelper.ORDERS_STATUS_WAIT));
+                        OrderListManager.getInstance().insertNewOrder(new OrderDTO(createdAt, updatedAt, id, OrderDBHelper.ORDERS_STATUS_WAIT));
                     }
                 }, new Response.ErrorListener() {
                     @Override
