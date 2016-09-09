@@ -35,12 +35,17 @@ public class LoginActivity extends AppCompatActivity {
         failureDialog.hide();
     }
 
-    public static void showProgressDialog(){
-        progressDialog.show();
-    }
+    public static void showProgressDialog(){  progressDialog.show(); }
 
     public static void hideProgressDialog(){
         progressDialog.hide();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        progressDialog.dismiss();
+        failureDialog.dismiss();
     }
 
     private EditText editEmail;
@@ -112,6 +117,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);
+                            finish();
                         }catch (JSONException e){
                             e.printStackTrace();
                         }

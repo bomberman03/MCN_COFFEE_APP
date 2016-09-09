@@ -16,24 +16,23 @@ public class Cafe implements Serializable {
     public String id;
     public String name;
     public String detail;
-    public String thumbnail;
+    public List<String> images;
     public List<User> likes;
     public List<MenuModel> menus;
-
-    public Cafe(String id, String name, String detail, String thumbnail, List<User> likes, List<MenuModel> menus){
-        this.id = id;
-        this.name = name;
-        this.detail = detail;
-        this.thumbnail = thumbnail;
-        this.likes = likes;
-        this.menus = menus;
-    }
 
     public Cafe(JSONObject jsonObject) throws JSONException {
         if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
         if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
-        if(jsonObject.has("thumbnail")) this.thumbnail = jsonObject.getString("thumbnail");
+        this.images = new ArrayList<>();
+        if(jsonObject.has("images")){
+            JSONArray jsonImageArray = jsonObject.getJSONArray("images");
+            for(int i=0; i<jsonImageArray.length(); i++)
+            {
+                String image = jsonImageArray.getString(i);
+                this.images.add(image);
+            }
+        }
         this.menus = new ArrayList<>();
         if(jsonObject.has("menu")) {
             JSONArray jsonMenuArray = jsonObject.getJSONArray("menus");

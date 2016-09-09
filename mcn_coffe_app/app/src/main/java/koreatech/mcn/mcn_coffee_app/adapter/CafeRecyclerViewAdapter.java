@@ -4,16 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
+import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 
 /**
@@ -39,6 +43,8 @@ public class CafeRecyclerViewAdapter extends RecyclerView.Adapter<CafeRecyclerVi
     private List<Cafe> cafes;
     private Context context;
 
+    private String TAG = "CafeRecyclerViewAdapter";
+
     public CafeRecyclerViewAdapter(Context context, List<Cafe> cafes) {
         this.context = context;
         this.cafes = cafes;
@@ -60,7 +66,11 @@ public class CafeRecyclerViewAdapter extends RecyclerView.Adapter<CafeRecyclerVi
     public void onBindViewHolder(CafeViewHolder cafeViewHolder, final int i) {
         cafeViewHolder.cafeName.setText(cafes.get(i).name);
         cafeViewHolder.cafeDetail.setText(cafes.get(i).detail);
-        cafeViewHolder.cafeThumbnail.setImageResource(R.drawable.cafe_default);
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/image/cafe/" + cafes.get(i).images.get(0);
+        Glide.with(context)
+                .load(url)
+                .placeholder(R.drawable.cafe_default)
+                .into(cafeViewHolder.cafeThumbnail);
 
         cafeViewHolder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
