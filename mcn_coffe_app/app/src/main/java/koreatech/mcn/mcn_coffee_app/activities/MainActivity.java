@@ -8,7 +8,6 @@ import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -19,6 +18,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+
+import net.danlew.android.joda.JodaTimeAndroid;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private CafeRecyclerViewAdapter cafeRecyclerViewAdapter;
 
+    private String TAG = "MainActivity";
+
     @Override
     public void onStart() {
         super.onStart();
@@ -57,21 +60,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        JodaTimeAndroid.init(this);
+
         Intent intent = new Intent(this, OrderAlarmService.class);
         startService(intent);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
 
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         recyclerView.setHasFixedSize(true);
@@ -83,7 +79,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(cafeRecyclerViewAdapter);
 
         content_request();
-    }
+  }
 
     @Override
     public void onBackPressed() {

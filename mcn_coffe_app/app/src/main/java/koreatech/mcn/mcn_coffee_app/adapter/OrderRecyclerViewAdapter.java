@@ -27,6 +27,10 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
         this.orders = orders;
     }
 
+    public OrderRecyclerViewAdapter(ArrayList<Order> orders){
+        this.orders = orders;
+    }
+
     @Override
     public OrderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).
@@ -53,7 +57,8 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
             public void onClick(View v) {
                 orders.get(position).count++;
                 holder.orderCount.setText(orders.get(position).count + "개");
-                orderFragment.updateTotalCost();
+                if(orderFragment != null)
+                    orderFragment.updateTotalCost();
             }
         });
         holder.decreaseOrder.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +67,8 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
                 orders.get(position).count--;
                 if(orders.get(position).count > 0) {
                     holder.orderCount.setText(orders.get(position).count + "개");
-                    orderFragment.updateTotalCost();
+                    if(orderFragment != null)
+                        orderFragment.updateTotalCost();
                 } else {
                     removeAt(position);
                 }
@@ -73,20 +79,23 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
     public void add(Order order){
         orders.add(order);
         notifyItemInserted(orders.size() - 1);
-        orderFragment.updateTotalCost();
+        if(orderFragment != null)
+            orderFragment.updateTotalCost();
     }
 
     public void removeAt(int position) {
         orders.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, orders.size());
-        orderFragment.updateTotalCost();
+        if(orderFragment != null)
+            orderFragment.updateTotalCost();
     }
 
     public void clear(){
         orders.clear();
         notifyDataSetChanged();
-        orderFragment.updateTotalCost();
+        if(orderFragment != null)
+            orderFragment.updateTotalCost();
     }
 
     @Override

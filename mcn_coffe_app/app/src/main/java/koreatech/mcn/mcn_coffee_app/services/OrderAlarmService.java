@@ -3,9 +3,7 @@ package koreatech.mcn.mcn_coffee_app.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Message;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -17,18 +15,14 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
-import java.sql.Timestamp;
 
-import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
-import koreatech.mcn.mcn_coffee_app.localStorage.OrderDBHelper;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
@@ -45,7 +39,7 @@ public class OrderAlarmService extends Service {
     public void connect(Intent intent)
     {
         cafe = (Cafe) intent.getSerializableExtra("cafe");
-        user = AuthManager.getInstance().getCurrentUser();
+        user = AuthManager.getInstance().getCurrentUser(getApplicationContext());
         try {
             mSocket = IO.socket("http://" + Settings.serverIp + ":" + Settings.socket_port);
         } catch (URISyntaxException e) {
@@ -77,7 +71,7 @@ public class OrderAlarmService extends Service {
                     if(data.has("user")) user = data.getString("user");
                     Log.d(TAG, user);
 
-                    if(user.equals(AuthManager.getInstance().getCurrentUser().id))
+                    if(user.equals(AuthManager.getInstance().getCurrentUser(getApplicationContext()).id))
                     {
                         Log.d(TAG, "this is my order!");
                     }
@@ -99,7 +93,6 @@ public class OrderAlarmService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "service started", Toast.LENGTH_SHORT).show();
         OrderListManager.getInstance().readFromDB(this);
         updateOrderLIst();
         return START_STICKY;
@@ -123,12 +116,14 @@ public class OrderAlarmService extends Service {
     public void updateOrderLIst() {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/orders/users";
+        Log.d(TAG, url);
         JSONObject jsonParam = new JSONObject();
 
         try {
-            jsonParam.put("user", AuthManager.getInstance().getCurrentUser().id);
+            jsonParam.put("user", AuthManager.getInstance().getCurrentUser(getApplicationContext()).id);
         } catch (JSONException e){
             e.printStackTrace();
+            return;
         }
 
         JsonObjectRequest postOrderRequest = new JsonObjectRequest
@@ -141,15 +136,16 @@ public class OrderAlarmService extends Service {
                             for(int i=0; i<jsonArray.length(); i++)
                             {
                                 JSONObject orderObject = jsonArray.getJSONObject(i);
+                                Log.d(TAG, orderObject.toString());
                                 String createdAt = "";
                                 String updatedAt = "";
                                 String id = "";
                                 int status = 0;
                                 try {
                                     if(orderObject.has("createdAt"))
-                                        createdAt = OrderDTO.isoTimeToTimeStamp(orderObject.getString("createdAt"));
+                                        createdAt = OrderDTO.isoTimeToTimeStamp(getApplicationContext(), orderObject.getString("createdAt"));
                                     if(orderObject.has("updatedAt"))
-                                        updatedAt = OrderDTO.isoTimeToTimeStamp(orderObject.getString("updatedAt"));
+                                        updatedAt = OrderDTO.isoTimeToTimeStamp(getApplicationContext(), orderObject.getString("updatedAt"));
                                     if(orderObject.has("_id"))
                                         id = orderObject.getString("_id");
                                     if(orderObject.has("status"))
@@ -157,9 +153,13 @@ public class OrderAlarmService extends Service {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                Log.d(TAG, "createAt: " + createdAt);
+                                Log.d(TAG, "updateAt: " + updatedAt);
+                                Log.d(TAG, "id: " + id);
+                                Log.d(TAG, "status: " + status);
                                 OrderListManager.getInstance().updateOrder(new OrderDTO(createdAt, updatedAt, id, status));
                             }
-                            //startThread();
+                            startThread();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -169,8 +169,7 @@ public class OrderAlarmService extends Service {
                     public void onErrorResponse(VolleyError error) {
                     }
                 });
-        //queue.add(postOrderRequest);
-
+        queue.add(postOrderRequest);
     }
 
     public void startThread() {

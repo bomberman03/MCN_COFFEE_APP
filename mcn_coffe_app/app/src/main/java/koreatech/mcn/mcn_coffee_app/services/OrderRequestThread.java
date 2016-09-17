@@ -90,9 +90,9 @@ public class OrderRequestThread extends Thread {
                                 String id = "";
                                 int status = 0;
                                 if(object.has("createdAt"))
-                                    createdAt = OrderDTO.isoTimeToTimeStamp(object.getString("createdAt"));
+                                    createdAt = OrderDTO.isoTimeToTimeStamp(context, object.getString("createdAt"));
                                 if(object.has("updatedAt"))
-                                    updatedAt = OrderDTO.isoTimeToTimeStamp(object.getString("updatedAt"));
+                                    updatedAt = OrderDTO.isoTimeToTimeStamp(context, object.getString("updatedAt"));
                                 if(object.has("_id"))
                                     id = object.getString("_id");
                                 if(object.has("status"))

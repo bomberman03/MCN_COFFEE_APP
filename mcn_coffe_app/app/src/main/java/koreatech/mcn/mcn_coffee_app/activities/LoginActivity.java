@@ -1,5 +1,6 @@
 package koreatech.mcn.mcn_coffee_app.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -55,6 +56,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public static MaterialDialog progressDialog;
     public static MaterialDialog failureDialog;
+
+    private Context self = this;
 
     public void init(){
         editEmail  = (EditText) findViewById(R.id.edit_email);
@@ -113,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                             String jsonString = new String(android.util.Base64.decode(token.split("\\.")[1], Base64.DEFAULT));
                             JSONObject object = new JSONObject(jsonString);
 
-                            AuthManager.getInstance().initUser(object);
+                            AuthManager.getInstance().initUser(self, object);
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                             startActivity(intent);

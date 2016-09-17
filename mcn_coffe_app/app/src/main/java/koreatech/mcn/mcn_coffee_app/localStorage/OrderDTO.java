@@ -1,5 +1,7 @@
 package koreatech.mcn.mcn_coffee_app.localStorage;
 
+import android.content.Context;
+
 import org.joda.time.DateTime;
 
 import java.sql.Timestamp;
@@ -15,7 +17,7 @@ public class OrderDTO {
     public String id;
     public int status;
 
-    public static String isoTimeToTimeStamp(String isoTime)
+    public static String isoTimeToTimeStamp(Context context, String isoTime)
     {
         DateTime dateTime = new DateTime(isoTime);
         Timestamp timestamp = new Timestamp(dateTime.getMillis());

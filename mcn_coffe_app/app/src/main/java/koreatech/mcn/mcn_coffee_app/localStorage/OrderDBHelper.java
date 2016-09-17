@@ -6,8 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.ArrayList;
+import net.danlew.android.joda.JodaTimeAndroid;
 
+import java.util.ArrayList;
 /**
  * Created by blood_000 on 2016-08-30.
  */
@@ -32,6 +33,7 @@ public class OrderDBHelper extends SQLiteOpenHelper {
     public OrderDBHelper(Context context)
     {
         super(context, DATABASE_NAME , null, 1);
+        JodaTimeAndroid.init(context);
     }
 
     @Override
@@ -49,6 +51,8 @@ public class OrderDBHelper extends SQLiteOpenHelper {
     public void clearDB()
     {
         SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS orders");
+        onCreate(db);
     }
 
     public boolean insertOrder(OrderDTO order)
@@ -94,5 +98,17 @@ public class OrderDBHelper extends SQLiteOpenHelper {
         }
 
         return array_list;
+    }
+
+    public String getRecentTimeStamp() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String sql = "select MAX(updatedAt) as updatedAt from orders";
+        Cursor res =  db.rawQuery( sql, null);
+        res.moveToFirst();
+        String ret = "";
+        if(res.isAfterLast() == false) {
+            ret = res.getString(res.getColumnIndex(ORDERS_COLUMN_UPDATED_AT));
+        }
+        return ret;
     }
 }

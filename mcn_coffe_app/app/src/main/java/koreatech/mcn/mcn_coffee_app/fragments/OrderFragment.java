@@ -184,7 +184,7 @@ public class OrderFragment extends TabFragment {
 
         try {
             jsonParam.put("cafe", ((OrderActivity) getActivity()).getCafe().id);
-            jsonParam.put("user", AuthManager.getInstance().getCurrentUser().id);
+            jsonParam.put("user", AuthManager.getInstance().getCurrentUser(getContext()).id);
             jsonParam.put("cost", orderCost);
             JSONArray jsonArray = new JSONArray();
 

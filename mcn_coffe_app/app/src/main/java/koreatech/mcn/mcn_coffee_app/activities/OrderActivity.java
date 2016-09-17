@@ -137,10 +137,9 @@ public class OrderActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
-
         Intent intent = getIntent();
         cafe = (Cafe) intent.getSerializableExtra("cafe");
-
+        getSupportActionBar().setTitle(cafe.name);
         initFragments();
         initAdapter();
     }
