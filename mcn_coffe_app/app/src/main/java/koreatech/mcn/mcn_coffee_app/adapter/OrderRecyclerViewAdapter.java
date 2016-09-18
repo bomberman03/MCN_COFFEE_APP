@@ -52,28 +52,34 @@ public class OrderRecyclerViewAdapter extends RecyclerView.Adapter<OrderRecycler
             isFirst = false;
         }
         holder.optionList.setText(options);
-        holder.increaseOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                orders.get(position).count++;
-                holder.orderCount.setText(orders.get(position).count + "개");
-                if(orderFragment != null)
-                    orderFragment.updateTotalCost();
-            }
-        });
-        holder.decreaseOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                orders.get(position).count--;
-                if(orders.get(position).count > 0) {
+        if(orderFragment != null) {
+            holder.increaseOrder.setVisibility(View.VISIBLE);
+            holder.increaseOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    orders.get(position).count++;
                     holder.orderCount.setText(orders.get(position).count + "개");
-                    if(orderFragment != null)
+                    if (orderFragment != null)
                         orderFragment.updateTotalCost();
-                } else {
-                    removeAt(position);
                 }
-            }
-        });
+            });
+        }
+        if(orderFragment != null) {
+            holder.decreaseOrder.setVisibility(View.VISIBLE);
+            holder.decreaseOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    orders.get(position).count--;
+                    if (orders.get(position).count > 0) {
+                        holder.orderCount.setText(orders.get(position).count + "개");
+                        if (orderFragment != null)
+                            orderFragment.updateTotalCost();
+                    } else {
+                        removeAt(position);
+                    }
+                }
+            });
+        }
     }
 
     public void add(Order order){

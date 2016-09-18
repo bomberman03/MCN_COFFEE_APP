@@ -25,37 +25,12 @@ import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 
-public class LoginActivity extends AppCompatActivity {
-
-    public static void  showFailureDialog(String message){
-        failureDialog.setContent(message);
-        failureDialog.show();
-    }
-
-    public static void hideFailureDialog(){
-        failureDialog.hide();
-    }
-
-    public static void showProgressDialog(){  progressDialog.show(); }
-
-    public static void hideProgressDialog(){
-        progressDialog.hide();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        progressDialog.dismiss();
-        failureDialog.dismiss();
-    }
+public class LoginActivity extends NetworkActivity {
 
     private EditText editEmail;
     private EditText editPassword;
 
     private Button loginButton;
-
-    public static MaterialDialog progressDialog;
-    public static MaterialDialog failureDialog;
 
     private Context self = this;
 
@@ -65,17 +40,10 @@ public class LoginActivity extends AppCompatActivity {
         editPassword = (EditText) findViewById(R.id.edit_password);
         editPassword.setText("nosweat12$");
         loginButton = (Button) findViewById(R.id.button_login);
-        progressDialog = new MaterialDialog.Builder(this)
-                .title("로그인 요청중")
-                .content("잠시만 기다려주세요")
-                .progress(true, 0)
-                .progressIndeterminateStyle(true)
-                .build();
-        failureDialog = new MaterialDialog.Builder(this)
-                .title("인증에 실패했습니다.")
-                .content("")
-                .positiveText("확인")
-                .build();
+
+        progressDialog.setTitle("로그인 요청중");
+        progressDialog.setContent("잠시만 기다려주세요");
+        failureDialog.setTitle("인증에 실패했습니다.");
     }
 
     public void initListener(){

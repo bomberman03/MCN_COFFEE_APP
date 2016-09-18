@@ -18,6 +18,11 @@
         <activity
             android:name="koreatech.mcn.mcn_coffee_app.activities.IntroActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="koreatech.mcn.mcn_coffee_app.activities.LoginActivity"
@@ -43,12 +48,9 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name="koreatech.mcn.mcn_coffee_app.activities.OrderNotificationActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name="koreatech.mcn.mcn_coffee_app.activities.OrderNotificationActivity" />
+        <activity android:name="koreatech.mcn.mcn_coffee_app.activities.OrderListActivity"></activity>
+        <activity android:name="koreatech.mcn.mcn_coffee_app.activities.NetworkActivity" />
     </application>
 
 </manifest>

@@ -63,7 +63,6 @@ public class OrderListFragment extends TabFragment{
         init(view);
         initRecyclerView();
         content_request();
-
         return view;
     }
 

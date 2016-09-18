@@ -2,5 +2,5 @@
 <Button android:theme="@style/AppTheme.NewButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="신규주문"
+    android:text="수령완료"
     xmlns:android="http://schemas.android.com/apk/res/android" />

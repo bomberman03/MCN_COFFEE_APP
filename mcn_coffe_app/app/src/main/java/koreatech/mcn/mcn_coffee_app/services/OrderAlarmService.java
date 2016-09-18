@@ -11,88 +11,29 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
-
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
-import koreatech.mcn.mcn_coffee_app.models.Cafe;
-import koreatech.mcn.mcn_coffee_app.models.User;
 
 public class OrderAlarmService extends Service {
 
-    private User user;
-    private Cafe cafe;
-    private Socket mSocket;
-
     private String TAG = "OrderAlarmService";
-
-    public void connect(Intent intent)
-    {
-        cafe = (Cafe) intent.getSerializableExtra("cafe");
-        user = AuthManager.getInstance().getCurrentUser(getApplicationContext());
-        try {
-            mSocket = IO.socket("http://" + Settings.serverIp + ":" + Settings.socket_port);
-        } catch (URISyntaxException e) {
-            Log.d("TAG",e.getMessage());
-        }
-        mSocket.connect();
-        mSocket.on(cafe.id, new Emitter.Listener() {
-            @Override
-            public void call(Object... args) {
-                JSONObject jsonObject = (JSONObject) args[0];
-                try {
-                    String method = "";
-                    if(jsonObject.has("method")) method = jsonObject.getString("method");
-                    Log.d(TAG, method);
-                    if(!method.equals("put"))
-                        return;
-
-                    String name = "";
-                    if(jsonObject.has("name")) name = jsonObject.getString("name");
-                    Log.d(TAG, name);
-                    if(!name.equals("order"))
-                        return;
-
-                    JSONObject data = new JSONObject();
-                    if(jsonObject.has("data")) data = jsonObject.getJSONObject("data");
-                    Log.d(TAG, data.toString());
-
-                    String user = "";
-                    if(data.has("user")) user = data.getString("user");
-                    Log.d(TAG, user);
-
-                    if(user.equals(AuthManager.getInstance().getCurrentUser(getApplicationContext()).id))
-                    {
-                        Log.d(TAG, "this is my order!");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public void disconnect()
-    {
-        mSocket.disconnect();
-        mSocket.off(cafe.id);
-    }
 
     private OrderRequestThread orderRequestThread;
     private OrderResponseHandler orderResponseHandler;
 
+    private int startId;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        this.startId = startId;
+        Log.d(TAG, "onStartCommand(" + startId + ")");
         OrderListManager.getInstance().readFromDB(this);
         updateOrderLIst();
         return START_STICKY;
@@ -101,6 +42,7 @@ public class OrderAlarmService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "onDestroy(" + startId + ")");
         if(orderRequestThread != null) {
             orderRequestThread.stopForever();
             orderRequestThread = null;
@@ -116,7 +58,6 @@ public class OrderAlarmService extends Service {
     public void updateOrderLIst() {
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/orders/users";
-        Log.d(TAG, url);
         JSONObject jsonParam = new JSONObject();
 
         try {

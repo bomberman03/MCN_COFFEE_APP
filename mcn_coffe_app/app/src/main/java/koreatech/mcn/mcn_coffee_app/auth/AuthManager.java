@@ -2,6 +2,7 @@ package koreatech.mcn.mcn_coffee_app.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +24,8 @@ public class AuthManager {
 
     private User user;
 
+    private String TAG = "AuthManager";
+
     public void initUser(Context context, JSONObject jsonObject) {
         this.user = new User(jsonObject);
         String jsonString = jsonObject.toString();
@@ -37,6 +40,7 @@ public class AuthManager {
         if(this.user==null) {
             SharedPreferences pref = context.getSharedPreferences(prefName, context.MODE_PRIVATE);
             String jsonString = pref.getString("user", "");
+            Log.d(TAG, jsonString);
             try {
                 JSONObject jsonObject = new JSONObject(jsonString);
                 this.user = new User(jsonObject);
