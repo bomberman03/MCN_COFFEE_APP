@@ -15,62 +15,24 @@
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical">
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="주문번호"/>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_horizontal">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="12345"
-                            android:id="@+id/order_list_idx" />
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical|center_horizontal">
 
                 <TextView
+                    android:text="카페 이름"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="12000원"
-                    android:id="@+id/order_list_cost" />
+                    android:id="@+id/order_cafe"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <TextView
+                    android:text="10000 원"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="자세한 내용"
-                    android:id="@+id/textView5" />
+                    android:id="@+id/order_cost" />
+
             </LinearLayout>
 
             <LinearLayout

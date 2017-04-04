@@ -16,6 +16,7 @@ public class MenuModel {
     public String name;
     public String detail;
     public int cost;
+    public int time;
     public List<Option> options;
 
     public MenuModel(String id, String name, String detail, int cost, List<Option> options){
@@ -31,6 +32,7 @@ public class MenuModel {
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
         if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
         if(jsonObject.has("cost")) this.cost = jsonObject.getInt("cost");
+        if(jsonObject.has("time")) this.time = jsonObject.getInt("time");
         options = new ArrayList<>();
         if(jsonObject.has("options")) {
             JSONArray jsonArray = jsonObject.getJSONArray("options");

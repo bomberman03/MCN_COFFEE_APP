@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import koreatech.mcn.mcn_coffe_app.R;
+import koreatech.mcn.mcn_coffee_app.fragments.CommentFragment;
 import koreatech.mcn.mcn_coffee_app.fragments.MenuFragment;
 import koreatech.mcn.mcn_coffee_app.fragments.OrderFragment;
-import koreatech.mcn.mcn_coffee_app.fragments.OrderListFragment;
 import koreatech.mcn.mcn_coffee_app.fragments.TabFragment;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.Order;
@@ -33,12 +33,12 @@ public class OrderActivity extends AppCompatActivity{
     private final int[] image_default_arr = {
             R.mipmap.order_default,
             R.mipmap.menu_default,
-            R.mipmap.order_list_default
+            R.mipmap.comment_default
     };
     private final int[] image_color_arr = {
             R.mipmap.order_color,
             R.mipmap.menu_color,
-            R.mipmap.order_list_color
+            R.mipmap.comment_color
     };
 
     private final int TAB_SIZE = 3;
@@ -53,19 +53,19 @@ public class OrderActivity extends AppCompatActivity{
 
     private MenuFragment menuFragment;
     private OrderFragment orderFragment;
-    private OrderListFragment orderListFragment;
+    private CommentFragment commentFragment;
 
-    private int cur_position = 0;
+    private int cur_position = 1;
     private Cafe cafe;
 
     public void initFragments(){
         menuFragment = new MenuFragment();
         orderFragment = new OrderFragment();
-        orderListFragment = new OrderListFragment();
+        commentFragment = new CommentFragment();
 
         fragments.add(orderFragment);
         fragments.add(menuFragment);
-        fragments.add(orderListFragment);
+        fragments.add(commentFragment);
     }
 
     public void initAdapter(){
@@ -85,7 +85,7 @@ public class OrderActivity extends AppCompatActivity{
             badge.setText("1");
             badge.hide();
             badgeViews.add(badge);
-            if(i>0) imageView.setImageResource(image_default_arr[i]);
+            if(i!=cur_position) imageView.setImageResource(image_default_arr[i]);
             else imageView.setImageResource(image_color_arr[i]);
         }
 
@@ -118,6 +118,8 @@ public class OrderActivity extends AppCompatActivity{
             public void onPageScrollStateChanged(int state) {
             }
         });
+
+        mViewPager.setCurrentItem(cur_position);
     }
 
     public void routeOrder(Order order){

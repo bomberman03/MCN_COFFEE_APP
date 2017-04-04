@@ -64,11 +64,21 @@ public class CafeRecyclerViewAdapter extends RecyclerView.Adapter<CafeRecyclerVi
 
     @Override
     public void onBindViewHolder(CafeViewHolder cafeViewHolder, final int i) {
-        cafeViewHolder.cafeName.setText(cafes.get(i).name);
+        double dist = Math.floor(cafes.get(i).dist);
+        String unit = "m";
+        if(dist > 1000.) {
+            dist = dist / 1000;
+            unit = "km";
+        }
+        dist = Math.round(dist * 10)/10.;
+        cafeViewHolder.cafeName.setText(cafes.get(i).name + "( " + dist + unit + " )");
         cafeViewHolder.cafeDetail.setText(cafes.get(i).detail);
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/image/cafe/" + cafes.get(i).images.get(0);
+
         Glide.with(context)
                 .load(url)
+                .override(300, 300)
+                .centerCrop()
                 .placeholder(R.drawable.cafe_default)
                 .into(cafeViewHolder.cafeThumbnail);
 
@@ -88,9 +98,9 @@ public class CafeRecyclerViewAdapter extends RecyclerView.Adapter<CafeRecyclerVi
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    public void removeAt(int position) {
-        cafes.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, cafes.size());
+    public void clear()
+    {
+        cafes.clear();
+        notifyDataSetChanged();
     }
 }

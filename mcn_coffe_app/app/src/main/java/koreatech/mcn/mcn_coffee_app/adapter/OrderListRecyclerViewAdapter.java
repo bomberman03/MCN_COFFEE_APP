@@ -25,15 +25,15 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
 
     public class OrderListViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
-        TextView orderListCost;
-        TextView orderListIdx;
+        TextView orderCafe;
+        TextView orderCost;
         LinearLayout orderListStatus;
 
         public OrderListViewHolder(View itemView) {
             super(itemView);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
-            orderListCost = (TextView) itemView.findViewById(R.id.order_list_cost);
-            orderListIdx = (TextView) itemView.findViewById(R.id.order_list_idx);
+            orderCafe = (TextView) itemView.findViewById(R.id.order_cafe);
+            orderCost = (TextView) itemView.findViewById(R.id.order_cost);
             orderListStatus = (LinearLayout) itemView.findViewById(R.id.order_list_status);
         }
     }
@@ -93,8 +93,8 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
 
     @Override
     public void onBindViewHolder(OrderListViewHolder orderListViewHolder, final int position) {
-        //orderListViewHolder.orderListIdx.setText(String.valueOf(orderLists.get(position).idx));
-        orderListViewHolder.orderListCost.setText(orderLists.get(position).cost + "원");
+        orderListViewHolder.orderCafe.setText(String.valueOf(orderLists.get(position).cafe.name));
+        orderListViewHolder.orderCost.setText(orderLists.get(position).cost + "원");
         orderListViewHolder.orderListStatus.removeAllViews();
         orderListViewHolder.orderListStatus.addView(orderListStatusButton(orderLists.get(position).status));
 
@@ -112,12 +112,6 @@ public class OrderListRecyclerViewAdapter extends RecyclerView.Adapter<OrderList
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    public void removeAt(int position) {
-        orderLists.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, orderLists.size());
     }
 
     public void clear(){

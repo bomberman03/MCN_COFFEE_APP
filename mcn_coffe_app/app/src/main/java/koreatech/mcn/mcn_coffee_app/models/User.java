@@ -33,4 +33,16 @@ public class User {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", image='" + image + '\'' +
+                '}';
+    }
 }

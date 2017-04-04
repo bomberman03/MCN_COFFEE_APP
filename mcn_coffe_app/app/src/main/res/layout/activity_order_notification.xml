@@ -27,6 +27,20 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="카페 이름"
                 android:id="@+id/cafe_name" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="카페에 대한 설명이 옵니다"
+                android:id="@+id/cafe_detail" />
         </LinearLayout>
 
         <LinearLayout
@@ -35,11 +49,14 @@
             android:layout_height="match_parent" >
 
             <TextView
+                android:text="주문 번호 1102"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="카페에 대한 설명이 옵니다"
-                android:id="@+id/cafe_detail" />
+                android:id="@+id/order_idx"
+                android:layout_weight="1"
+                android:layout_marginLeft="10dp"
+                android:gravity="right"
+                android:textSize="18sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -50,12 +67,33 @@
         android:layout_weight="1" />
 
     <Button
-        android:theme="@style/AppTheme.OrderButton"
+        android:visibility="gone"
+        android:theme="@style/AppTheme.PrimaryDarkButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="6dp"
-        android:text="수령하기"
+        android:text="주문수령"
         android:id="@+id/order_button"
         android:layout_gravity="center_horizontal"/>
+
+    <Button
+        android:visibility="gone"
+        android:theme="@style/AppTheme.AccentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="주문취소"
+        android:id="@+id/cancel_button"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:visibility="gone"
+        android:theme="@style/AppTheme.PrimaryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="평가하기"
+        android:id="@+id/comment_button"
+        android:layout_gravity="center_horizontal" />
 
 </LinearLayout>

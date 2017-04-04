@@ -32,14 +32,13 @@ import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.MenuModel;
 import koreatech.mcn.mcn_coffee_app.models.Order;
+import koreatech.mcn.mcn_coffee_app.network.VolleyManager;
 import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 
 /**
  * Created by blood_000 on 2016-05-24.
  */
-public class MenuFragment extends TabFragment {
-
-    private String authentication_key;
+public class MenuFragment extends NetworkFragment {
 
     private TextView cafe_name;
     private TextView cafe_detail;
@@ -74,7 +73,7 @@ public class MenuFragment extends TabFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        checkAuthKey();
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_menu, container, false);
         init(view);
         initRecyclerView(view);
@@ -86,16 +85,9 @@ public class MenuFragment extends TabFragment {
         ((OrderActivity)getActivity()).routeOrder(order);
     }
 
-    public void checkAuthKey(){
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", getActivity().MODE_PRIVATE);
-        authentication_key = pref.getString("authentication_key", "");
-        if(authentication_key.length() > 0) {
-            // if authentication_key is not valid
-        }
-    }
-
     public void content_request(){
-        RequestQueue queue = Volley.newRequestQueue(getContext());
+        showProgressDialog();
+        RequestQueue queue = VolleyManager.getInstance().getRequestQueue(getContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + cafe.id + "/menus/";
 
         Map<String, String> params = new HashMap<>();
@@ -103,6 +95,8 @@ public class MenuFragment extends TabFragment {
         CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray jsonArray) {
+                hideProgressDialog();
+                menuRecyclerViewAdapter.clear();
                 for(int i=0; i<jsonArray.length(); i++){
                     try {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button android:theme="@style/AppTheme.WaitButton"
+<Button android:theme="@style/AppTheme.PrimaryDarkButton"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="수령대기"

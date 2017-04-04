@@ -5,7 +5,7 @@
     android:gravity="center_horizontal">
 
     <TextView
-        android:text="오늘의 서비스는 어떠셨나요?"
+        android:text="후기를 남겨 주세요"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView2" />
@@ -15,4 +15,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/ratingBar"
         android:layout_gravity="center_horizontal" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:layout_weight="1" />
+    </LinearLayout>
 </LinearLayout>

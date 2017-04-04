@@ -14,7 +14,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,7 +26,9 @@ import java.util.Map;
 
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.activities.OrderActivity;
+import koreatech.mcn.mcn_coffee_app.adapter.CommentRecyclerViewAdapter;
 import koreatech.mcn.mcn_coffee_app.adapter.OrderListRecyclerViewAdapter;
+import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.OrderList;
@@ -36,22 +38,22 @@ import koreatech.mcn.mcn_coffee_app.request.CustomArrayRequest;
 /**
  * Created by blood_000 on 2016-05-24.
  */
-public class OrderListFragment extends NetworkFragment {
+public class CommentFragment extends NetworkFragment{
 
     private ArrayList<OrderList> orderLists = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private OrderListRecyclerViewAdapter orderListRecyclerViewAdapter;
+    private CommentRecyclerViewAdapter commentRecyclerViewAdapter;
 
     public void init(View view){
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
     }
 
     public void initRecyclerView(){
-        orderListRecyclerViewAdapter = new OrderListRecyclerViewAdapter(getContext(), orderLists);
+        commentRecyclerViewAdapter = new CommentRecyclerViewAdapter(getContext(), orderLists);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(orderListRecyclerViewAdapter);
+        recyclerView.setAdapter(commentRecyclerViewAdapter);
     }
 
     @Nullable
@@ -69,32 +71,37 @@ public class OrderListFragment extends NetworkFragment {
 
         RequestQueue queue = VolleyManager.getInstance().getRequestQueue(getContext());
         Cafe cafe = ((OrderActivity) getActivity()).getCafe();
-        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + cafe.id + "/orders/";
+        String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + cafe.id + "/orders/comments";
 
-        Map<String, String> params = new HashMap<>();
+        JSONObject jsonParam = new JSONObject();
 
-        CustomArrayRequest cafeListRequest = new CustomArrayRequest(Request.Method.GET, url, params, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray jsonArray) {
-                orderLists.clear();
-                for(int i=0; i<jsonArray.length(); i++){
-                    try {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        OrderList orderList = new OrderList(jsonObject);
-                        orderLists.add(orderList);
-                        orderListRecyclerViewAdapter.notifyDataSetChanged();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        JsonObjectRequest postOrderRequest = new JsonObjectRequest
+                (Request.Method.GET, url, jsonParam, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject jsonObject) {
+                        commentRecyclerViewAdapter.clear();
+                        hideProgressDialog();
+                        JSONArray jsonArray;
+                        try {
+                            jsonArray = jsonObject.getJSONArray("orders");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject object = jsonArray.getJSONObject(i);
+                                OrderList orderList = new OrderList(object);
+                                orderLists.add(orderList);
+                                commentRecyclerViewAdapter.notifyDataSetChanged();
+                            }
+                        }catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError volleyError) {
-                Log.d("TAG", volleyError.getMessage());
-            }
-        });
-        // Add the request to the RequestQueue.
-        queue.add(cafeListRequest);
+                },  new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        hideProgressDialog();
+                        showFailureDialog(volleyError.getMessage());
+                    }
+                });
+        queue.add(postOrderRequest);
+        showProgressDialog();
     }
 }

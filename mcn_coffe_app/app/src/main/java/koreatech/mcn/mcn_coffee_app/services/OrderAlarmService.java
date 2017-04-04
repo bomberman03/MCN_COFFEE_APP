@@ -20,6 +20,7 @@ import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
+import koreatech.mcn.mcn_coffee_app.network.VolleyManager;
 
 public class OrderAlarmService extends Service {
 
@@ -56,7 +57,7 @@ public class OrderAlarmService extends Service {
     }
 
     public void updateOrderLIst() {
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue queue = VolleyManager.getInstance().getRequestQueue(getApplicationContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/orders/users";
         JSONObject jsonParam = new JSONObject();
 

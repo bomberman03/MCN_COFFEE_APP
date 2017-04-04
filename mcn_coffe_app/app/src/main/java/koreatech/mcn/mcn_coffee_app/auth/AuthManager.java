@@ -31,6 +31,7 @@ public class AuthManager {
         String jsonString = jsonObject.toString();
         SharedPreferences pref = context.getSharedPreferences(prefName, context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
+        Log.d(TAG, "initUser : " + jsonString);
         editor.putString("user", jsonString);
         editor.commit();
     }
@@ -40,7 +41,7 @@ public class AuthManager {
         if(this.user==null) {
             SharedPreferences pref = context.getSharedPreferences(prefName, context.MODE_PRIVATE);
             String jsonString = pref.getString("user", "");
-            Log.d(TAG, jsonString);
+            Log.d(TAG, "getCurrentUser : " + jsonString);
             try {
                 JSONObject jsonObject = new JSONObject(jsonString);
                 this.user = new User(jsonObject);
@@ -52,6 +53,7 @@ public class AuthManager {
     }
 
     public void clearUser(Context context) {
+        this.user = null;
         SharedPreferences pref = context.getSharedPreferences(prefName, context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.remove("user");

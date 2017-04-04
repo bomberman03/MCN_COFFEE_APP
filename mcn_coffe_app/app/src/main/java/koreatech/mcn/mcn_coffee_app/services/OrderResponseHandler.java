@@ -69,19 +69,19 @@ public class OrderResponseHandler extends Handler {
             case OrderDBHelper.ORDERS_STATUS_REQUEST:
                 break;
             case OrderDBHelper.ORDERS_STATUS_WAIT:
-                Toast.makeText(context, "order( " + orderDTO.id + " ) is requested", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "새로운 주문이 추가되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case OrderDBHelper.ORDERS_STATUS_COMPLETE:
-                Toast.makeText(context, "order( " + orderDTO.id + " ) is complete", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "주문이 완성되었습니다.", Toast.LENGTH_SHORT).show();
                 orderCompleteNotification(orderDTO.id);
                 break;
             case OrderDBHelper.ORDERS_STATUS_RECEIVE_REQUEST:
                 break;
             case OrderDBHelper.ORDERS_STATUS_RECEIVE:
-                Toast.makeText(context, "order( " + orderDTO.id + " ) is received", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "주문을 수령하였습니다.", Toast.LENGTH_SHORT).show();
                 break;
             case OrderDBHelper.ORDERS_STATUS_CANCEL:
-                Toast.makeText(context, "order( " + orderDTO.id + " ) is canceled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "주문이 취소되었습니다.", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

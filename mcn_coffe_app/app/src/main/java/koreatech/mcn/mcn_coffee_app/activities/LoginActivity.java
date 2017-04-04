@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import koreatech.mcn.mcn_coffe_app.R;
 import koreatech.mcn.mcn_coffee_app.auth.AuthManager;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
+import koreatech.mcn.mcn_coffee_app.network.VolleyManager;
 
 public class LoginActivity extends NetworkActivity {
 
@@ -36,9 +37,9 @@ public class LoginActivity extends NetworkActivity {
 
     public void init(){
         editEmail  = (EditText) findViewById(R.id.edit_email);
-        editEmail.setText("pathfinder");
+        editEmail.setText("");
         editPassword = (EditText) findViewById(R.id.edit_password);
-        editPassword.setText("nosweat12$");
+        editPassword.setText("");
         loginButton = (Button) findViewById(R.id.button_login);
 
         progressDialog.setTitle("로그인 요청중");
@@ -46,7 +47,7 @@ public class LoginActivity extends NetworkActivity {
         failureDialog.setTitle("인증에 실패했습니다.");
     }
 
-    public void initListener(){
+    public void initListener() {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +66,7 @@ public class LoginActivity extends NetworkActivity {
 
     public void loginRequest() {
         showProgressDialog();
-        RequestQueue queue = Volley.newRequestQueue(this);
+        RequestQueue queue = VolleyManager.getInstance().getRequestQueue(getApplicationContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/login/";
         JSONObject jsonParam = new JSONObject();
         try {

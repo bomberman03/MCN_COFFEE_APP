@@ -19,11 +19,19 @@ public class Cafe implements Serializable {
     public List<String> images;
     public List<User> likes;
     public List<MenuModel> menus;
+    public double latitude;
+    public double longitude;
+    public double dist;
 
     public Cafe(JSONObject jsonObject) throws JSONException {
         if(jsonObject.has("_id")) this.id = jsonObject.getString("_id");
         if(jsonObject.has("name")) this.name = jsonObject.getString("name");
         if(jsonObject.has("detail")) this.detail = jsonObject.getString("detail");
+        if(jsonObject.has("location")) {
+            JSONObject locationObject = jsonObject.getJSONObject("location");
+            if(locationObject.has("latitude")) this.latitude = locationObject.getDouble("latitude");
+            if(locationObject.has("longitude")) this.longitude = locationObject.getDouble("longitude");
+        }
         this.images = new ArrayList<>();
         if(jsonObject.has("images")){
             JSONArray jsonImageArray = jsonObject.getJSONArray("images");
@@ -40,5 +48,9 @@ public class Cafe implements Serializable {
                 // recursive code
             }
         }
+    }
+
+    public void setPivot(double latitude, double longitude) {
+        this.dist = Math.hypot(latitude - this.latitude, longitude - this.longitude);
     }
 }

@@ -32,6 +32,13 @@ public class OrderListManager {
         completeList = orderDBHelper.getOrder(OrderDBHelper.ORDERS_STATUS_COMPLETE, OrderDBHelper.ORDERS_STATUS_COMPLETE);
     }
 
+    public void clear()
+    {
+        waitList.clear();
+        completeList.clear();
+        orderDBHelper.clearDB();
+    }
+
     public void insertNewOrder(OrderDTO order)
     {
         orderDBHelper.insertOrder(order);

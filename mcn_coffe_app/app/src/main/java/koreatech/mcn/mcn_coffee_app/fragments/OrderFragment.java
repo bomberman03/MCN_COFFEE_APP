@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.auth.api.Auth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,14 +36,15 @@ import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDBHelper;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
+import koreatech.mcn.mcn_coffee_app.models.Cafe;
 import koreatech.mcn.mcn_coffee_app.models.Order;
+import koreatech.mcn.mcn_coffee_app.models.User;
+import koreatech.mcn.mcn_coffee_app.network.VolleyManager;
 
 /**
  * Created by blood_000 on 2016-05-24.
  */
-public class OrderFragment extends TabFragment {
-
-    private String authentication_key;
+public class OrderFragment extends NetworkFragment {
 
     private ArrayList<Order> orders = new ArrayList<>();
     private int orderCost = 0;
@@ -52,72 +55,84 @@ public class OrderFragment extends TabFragment {
     private Button orderButton;
     private Button initButton;
 
-    private MaterialDialog progressDialog;
-    private MaterialDialog failureDialog;
-    private MaterialDialog successDialog;
+    private MaterialDialog paymentDialog;
 
-    public void showSuccessDialog()
-    {
-        successDialog.show();
-    }
-
-    public void hideSuccessDialog()
-    {
-        successDialog.hide();
-    }
-
-    public void  showFailureDialog(String message){
-        failureDialog.setContent(message);
-        failureDialog.show();
-    }
-
-    public void hideFailureDialog(){
-        failureDialog.hide();
-    }
-
-    public void showProgressDialog(){
-        progressDialog.show();
-    }
-
-    public void hideProgressDialog(){
-        progressDialog.hide();
-    }
+    private String TAG = "OrderFragment";
 
     public void init(View view){
         orderButton = (Button) view.findViewById(R.id.order_button);
         initButton = (Button) view.findViewById(R.id.init_button);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        progressDialog = new MaterialDialog.Builder(getContext())
-                .title("주문 요청중")
-                .content("잠시만 기다려주세요")
-                .progress(true, 0)
-                .progressIndeterminateStyle(true)
-                .build();
-        failureDialog = new MaterialDialog.Builder(getContext())
-                .title("주문 실패")
-                .content("")
-                .positiveText("확인")
-                .build();
-        successDialog = new MaterialDialog.Builder(getContext())
-                .title("주문 성공")
-                .content("주문이 성공적으로 처리되었습니다.")
-                .positiveText("확인")
+        paymentDialog = new MaterialDialog.Builder(getContext())
+                .title("결제 방식")
+                .content("예상 시간은 ")
+                .items(new String[]{"신용 카드", "계좌 이체", "Google Pay"})
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        /**
+                         * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                         * returning false here won't allow the newly selected radio button to actually be selected.
+                         **/
+                        return true;
+                    }
+                })
+                .positiveText("결제하기")
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        clearOrder();
+                        hidePaymentDialog();
+                        postOrderRequest();
                     }
                 })
+                .negativeText("취소")
                 .build();
+    }
+
+    public String getLastTime() {
+        int interval = 15;
+        double time = 0.;
+        for(Order order: orders){
+            double mul = 1;
+            for(int j=0; j<order.count; j++) {
+                time += order.menu.time * mul;
+                mul *= 0.5;
+            }
+            time += interval;
+        }
+        String timeStr = "";
+        if(time > 3600) {
+            timeStr += String.valueOf((int)Math.floor(time / 3600)) + "시 ";
+            time %= 3600;
+        }
+        if(time > 60) {
+            timeStr += String.valueOf((int)Math.floor(time / 60)) + "분 ";
+            time %= 60;
+        }
+        if(time > 0) {
+            timeStr += String.valueOf((int)Math.floor(time)) + "초 ";
+        }
+        timeStr += "입니다.";
+        return timeStr;
+    }
+
+    public void showPaymentDialog() {
+        paymentDialog.getContentView().setText("예상 대기 시간은 " + getLastTime());
+        paymentDialog.show();
+    }
+    public void hidePaymentDialog() { paymentDialog.hide(); }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        paymentDialog.dismiss();
     }
 
     public void initListener(){
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // order confirmation dialog and push order to server
-                showProgressDialog();
-                postOrderRequest();
+                showPaymentDialog();
             }
         });
         initButton.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +153,7 @@ public class OrderFragment extends TabFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        checkAuthKey();
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_order, container, false);
         init(view);
         initListener();
@@ -169,22 +184,31 @@ public class OrderFragment extends TabFragment {
         updateTotalCost();
     }
 
-    public void checkAuthKey(){
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", getActivity().MODE_PRIVATE);
-        authentication_key = pref.getString("authentication_key", "");
-        if(authentication_key.length() > 0) {
-            // if authentication_key is not valid
-        }
-    }
-
     public void postOrderRequest() {
-        RequestQueue queue = Volley.newRequestQueue(getContext());
+        showProgressDialog();
+        RequestQueue queue = VolleyManager.getInstance().getRequestQueue(getContext());
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/cafes/" + ((OrderActivity) getActivity()).getCafe().id + "/orders/";
         JSONObject jsonParam = new JSONObject();
 
         try {
-            jsonParam.put("cafe", ((OrderActivity) getActivity()).getCafe().id);
-            jsonParam.put("user", AuthManager.getInstance().getCurrentUser(getContext()).id);
+            Cafe cafe = ((OrderActivity)getActivity()).getCafe();
+            JSONObject cafeObject = new JSONObject();
+            cafeObject.put("_id", cafe.id);
+            cafeObject.put("name", cafe.name);
+            cafeObject.put("detail", cafe.detail);
+            jsonParam.put("cafe", cafeObject);
+            User user = AuthManager.getInstance().getCurrentUser(getContext());
+            if(user == null)
+                Log.d(TAG, "user is null");
+            else
+                Log.d(TAG, "user : " + user);
+            JSONObject userObject = new JSONObject();
+            userObject.put("_id", user.id);
+            userObject.put("username", user.username);
+            userObject.put("name", user.name);
+            userObject.put("email", user.email);
+            userObject.put("phone", user.phone);
+            jsonParam.put("user", userObject);
             jsonParam.put("cost", orderCost);
             JSONArray jsonArray = new JSONArray();
 
@@ -193,7 +217,7 @@ public class OrderFragment extends TabFragment {
                 JSONObject orderObject = new JSONObject();
 
                 JSONObject menuObject = new JSONObject();
-                orderObject.put("menu",menuObject);
+                orderObject.put("menu", menuObject);
 
                 menuObject.put("_id", orders.get(i).menu.id);
                 menuObject.put("name", orders.get(i).menu.name);
@@ -202,7 +226,6 @@ public class OrderFragment extends TabFragment {
                 for(int j=0; j<orders.get(i).options.size(); j++)
                 {
                     JSONObject optionObject = new JSONObject();
-                    //optionObject.put("_id", orders.get(i).menu.options.get(j).id);
                     optionObject.put("name", orders.get(i).options.get(j).name);
                     optionJsonArray.put(optionObject);
                 }
@@ -215,8 +238,8 @@ public class OrderFragment extends TabFragment {
             }
             jsonParam.put("orders",jsonArray);
             jsonParam.put("status", 0);
-
         } catch (JSONException e){
+            hideProgressDialog();
             e.printStackTrace();
         }
         JsonObjectRequest postOrderRequest = new JsonObjectRequest
@@ -225,6 +248,7 @@ public class OrderFragment extends TabFragment {
                     public void onResponse(JSONObject jsonObject) {
                         hideProgressDialog();
                         showSuccessDialog();
+                        orderRecyclerViewAdapter.clear();
                         String createdAt = "";
                         String updatedAt = "";
                         String id = "";
@@ -237,6 +261,8 @@ public class OrderFragment extends TabFragment {
                                 id = jsonObject.getString("_id");
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            hideProgressDialog();
+                            showFailureDialog(e.getMessage());
                         }
                         OrderListManager.getInstance().insertNewOrder(new OrderDTO(createdAt, updatedAt, id, OrderDBHelper.ORDERS_STATUS_WAIT));
                     }

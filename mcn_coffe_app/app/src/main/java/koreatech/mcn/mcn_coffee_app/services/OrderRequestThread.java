@@ -10,7 +10,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +20,7 @@ import java.util.ArrayList;
 import koreatech.mcn.mcn_coffee_app.config.Settings;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderDTO;
 import koreatech.mcn.mcn_coffee_app.localStorage.OrderListManager;
+import koreatech.mcn.mcn_coffee_app.network.VolleyManager;
 
 /**
  * Created by blood_000 on 2016-08-31.
@@ -61,9 +61,10 @@ public class OrderRequestThread extends Thread {
 
     public void requestOrder()
     {
+        Log.d(TAG, "requestOrder");
         ArrayList<OrderDTO> orderDTOs = OrderListManager.getInstance().getRequestOrderList();
 
-        RequestQueue queue = Volley.newRequestQueue(context);
+        RequestQueue queue = VolleyManager.getInstance().getRequestQueue(context);
         String url = "http://" + Settings.serverIp + ":" + Settings.port + "/orders/status/";
         JSONObject jsonParam = new JSONObject();
 
@@ -98,6 +99,8 @@ public class OrderRequestThread extends Thread {
                                 if(object.has("status"))
                                     status = object.getInt("status");
                                 OrderDTO res = OrderListManager.getInstance().updateOrder(new OrderDTO(createdAt, updatedAt, id, status));
+                                Log.d(TAG, "id: " + id);
+                                Log.d(TAG, "status: " + status);
                                 if(res != null)
                                 {
                                     Message message = handler.obtainMessage();
@@ -112,10 +115,7 @@ public class OrderRequestThread extends Thread {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if(error != null)
-                            Log.d(TAG, error.getMessage());
-                        else
-                            Log.d(TAG, "error object is null");
+                        Log.d(TAG, "Error!");
                     }
                 });
         queue.add(orderRequest);

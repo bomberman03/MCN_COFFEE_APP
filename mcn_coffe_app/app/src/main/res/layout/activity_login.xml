@@ -81,14 +81,14 @@
                 android:gravity="center_horizontal">
 
                 <Button
-                    android:theme="@style/AppTheme.LoginButton"
+                    android:theme="@style/AppTheme.PrimaryButton"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="Login"
                     android:id="@+id/button_login" />
 
                 <Button
-                    android:theme="@style/AppTheme.RegisterButton"
+                    android:theme="@style/AppTheme.AccentButton"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
                     android:text="Register"

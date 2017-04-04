@@ -197,4 +197,9 @@ public class MenuRecyclerViewAdapter extends RecyclerView.Adapter<MenuRecyclerVi
             options_section.addView(generateOptionLayout(order, option));
         }
     }
+
+    public void clear(){
+        menus.clear();
+        notifyDataSetChanged();
+    }
 }
